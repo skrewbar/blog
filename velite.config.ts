@@ -38,7 +38,7 @@ export default defineConfig({
     clean: true,
   },
   collections: { posts },
-  markdown: {
+  mdx: {
     remarkPlugins: [remarkMath],
     rehypePlugins: [
       rehypeKatex,

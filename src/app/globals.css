@@ -138,3 +138,12 @@
 [data-rehype-pretty-code-figure] code {
   @apply font-mono;
 }
+
+/* KaTeX math rendering */
+.katex-display {
+  @apply my-6 overflow-x-auto;
+}
+
+.prose .katex {
+  font-size: 1em;
+}
