@@ -131,12 +131,43 @@
 }
 
 /* Code blocks from rehype-pretty-code */
+[data-rehype-pretty-code-figure] {
+  @apply my-6;
+}
+
 [data-rehype-pretty-code-figure] pre {
   @apply overflow-x-auto rounded-lg border bg-muted/50 p-4 text-sm;
 }
 
 [data-rehype-pretty-code-figure] code {
-  @apply font-mono;
+  @apply grid font-mono text-sm leading-relaxed;
+}
+
+/* Dual theme: apply Shiki token colors (class-based dark mode) */
+[data-rehype-pretty-code-figure] code[data-theme*=" "],
+[data-rehype-pretty-code-figure] code[data-theme*=" "] span {
+  color: var(--shiki-light);
+  background-color: var(--shiki-light-bg);
+}
+
+.dark [data-rehype-pretty-code-figure] code[data-theme*=" "],
+.dark [data-rehype-pretty-code-figure] code[data-theme*=" "] span {
+  color: var(--shiki-dark);
+  background-color: var(--shiki-dark-bg);
+}
+
+/* Prevent typography plugin from overriding highlighted code */
+.prose [data-rehype-pretty-code-figure] pre {
+  @apply m-0;
+}
+
+.prose [data-rehype-pretty-code-figure] code {
+  @apply bg-transparent font-normal;
+}
+
+.prose [data-rehype-pretty-code-figure] code::before,
+.prose [data-rehype-pretty-code-figure] code::after {
+  content: none;
 }
 
 /* KaTeX math rendering */

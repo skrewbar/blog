@@ -18,7 +18,7 @@ export function MdxContent({ code }: MdxContentProps) {
   const Component = useMemo(() => getMDXComponent(code), [code]);
 
   return (
-    <article className="prose prose-neutral dark:prose-invert max-w-none prose-pre:bg-transparent prose-pre:p-0">
+    <article className="prose prose-neutral dark:prose-invert max-w-none prose-pre:my-0 prose-code:before:content-none prose-code:after:content-none">
       {createElement(Component)}
     </article>
   );
