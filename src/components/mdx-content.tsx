@@ -2,6 +2,7 @@
 
 import { createElement, useMemo } from "react";
 import * as runtime from "react/jsx-runtime";
+import { MdxFigure } from "@/components/mdx-figure";
 
 function getMDXComponent(code: string) {
   const fn = new Function(code);
@@ -9,6 +10,10 @@ function getMDXComponent(code: string) {
     components?: Record<string, React.ComponentType>;
   }>;
 }
+
+const mdxComponents = {
+  figure: MdxFigure,
+};
 
 type MdxContentProps = {
   code: string;
@@ -19,7 +24,7 @@ export function MdxContent({ code }: MdxContentProps) {
 
   return (
     <article className="prose prose-neutral dark:prose-invert max-w-none prose-pre:my-0 prose-code:before:content-none prose-code:after:content-none">
-      {createElement(Component)}
+      {createElement(Component, { components: mdxComponents })}
     </article>
   );
 }
