@@ -8,7 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import type { Post } from "@/lib/posts";
+import { getCategoryHref, type Post } from "@/lib/posts";
 
 type PostCardProps = {
   post: Post;
@@ -23,7 +23,7 @@ export function PostCard({ post }: PostCardProps) {
           <span>·</span>
           <span>{post.readingTime}</span>
           <span>·</span>
-          <Link href={`/${post.category}`} className="hover:text-foreground">
+          <Link href={getCategoryHref(post.category)} className="hover:text-foreground">
             {post.category}
           </Link>
         </div>

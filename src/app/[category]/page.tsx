@@ -3,7 +3,9 @@ import { notFound } from "next/navigation";
 import { Pagination } from "@/components/pagination";
 import { PostCard } from "@/components/post-card";
 import {
+  decodeCategoryParam,
   getAllCategories,
+  getCategoryHref,
   getPostsByCategory,
   paginatePosts,
 } from "@/lib/posts";
@@ -34,9 +36,10 @@ export async function generateMetadata({
   params,
 }: CategoryPageProps): Promise<Metadata> {
   const { category } = await params;
+  const decodedCategory = decodeCategoryParam(category);
   return {
-    title: `${category} 글 목록`,
-    description: `${siteConfig.name}의 ${category} 카테고리 글 목록`,
+    title: `${decodedCategory} 글 목록`,
+    description: `${siteConfig.name}의 ${decodedCategory} 카테고리 글 목록`,
   };
 }
 
@@ -45,16 +48,17 @@ export default async function CategoryPage({
   searchParams,
 }: CategoryPageProps) {
   const { category } = await params;
+  const decodedCategory = decodeCategoryParam(category);
 
-  if (RESERVED_CATEGORIES.has(category)) {
+  if (RESERVED_CATEGORIES.has(decodedCategory)) {
     notFound();
   }
 
   const query = await searchParams;
   const page = Number(query.page ?? "1");
-  const posts = getPostsByCategory(category);
+  const posts = getPostsByCategory(decodedCategory);
 
-  if (!posts.length && !getAllCategories().includes(category)) {
+  if (!posts.length && !getAllCategories().includes(decodedCategory)) {
     notFound();
   }
 
@@ -64,7 +68,7 @@ export default async function CategoryPage({
     <div className="space-y-8">
       <header className="space-y-2">
         <p className="text-sm text-muted-foreground">Category</p>
-        <h1 className="text-3xl font-bold tracking-tight">{category}</h1>
+        <h1 className="text-3xl font-bold tracking-tight">{decodedCategory}</h1>
       </header>
 
       <div className="space-y-4">
@@ -76,7 +80,7 @@ export default async function CategoryPage({
       </div>
 
       <Pagination
-        basePath={`/${category}`}
+        basePath={getCategoryHref(decodedCategory)}
         currentPage={pagination.currentPage}
         totalPages={pagination.totalPages}
       />

@@ -6,7 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { getPostsByCategory } from "@/lib/posts";
+import { getCategoryHref, getPostsByCategory } from "@/lib/posts";
 
 const PREVIEW_COUNT = 3;
 
@@ -22,7 +22,7 @@ export function CategoryPreviewCard({ category }: CategoryPreviewCardProps) {
     <Card className="transition-colors hover:bg-muted/40">
       <CardHeader>
         <CardTitle className="text-xl">
-          <Link href={`/${category}`} className="hover:underline">
+          <Link href={getCategoryHref(category)} className="hover:underline">
             {category}
           </Link>
         </CardTitle>
@@ -43,7 +43,7 @@ export function CategoryPreviewCard({ category }: CategoryPreviewCardProps) {
         </ul>
         {posts.length > PREVIEW_COUNT ? (
           <Link
-            href={`/${category}`}
+            href={getCategoryHref(category)}
             className="text-sm text-muted-foreground transition-colors hover:text-foreground"
           >
             더 보기 →

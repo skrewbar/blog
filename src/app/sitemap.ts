@@ -14,7 +14,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   const categories = [...new Set(posts.map((post) => post.category))];
   const categoryEntries: MetadataRoute.Sitemap = categories.map((category) => ({
-    url: `${siteConfig.url}/${category}`,
+    url: `${siteConfig.url}/${encodeURIComponent(category)}`,
     changeFrequency: "weekly",
     priority: 0.6,
   }));

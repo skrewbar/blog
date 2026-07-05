@@ -3,6 +3,14 @@ import { siteConfig } from "@/lib/site";
 
 export type { Post };
 
+export function getCategoryHref(category: string): string {
+  return `/${encodeURIComponent(category)}`;
+}
+
+export function decodeCategoryParam(category: string): string {
+  return decodeURIComponent(category);
+}
+
 export function getPublishedPosts(): Post[] {
   return allPosts
     .filter((post) => !post.draft)

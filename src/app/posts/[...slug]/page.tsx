@@ -9,7 +9,7 @@ import { PostStats } from "@/components/post-stats";
 import { TableOfContents } from "@/components/table-of-contents";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { getPostBySlug, getPublishedPosts } from "@/lib/posts";
+import { getCategoryHref, getPostBySlug, getPublishedPosts } from "@/lib/posts";
 import { siteConfig } from "@/lib/site";
 
 type PostPageProps = {
@@ -66,7 +66,7 @@ export default async function PostPage({ params }: PostPageProps) {
           <span>·</span>
           <span>{post.readingTime}</span>
           <span>·</span>
-          <Link href={`/${post.category}`} className="hover:text-foreground">
+          <Link href={getCategoryHref(post.category)} className="hover:text-foreground">
             {post.category}
           </Link>
         </div>
