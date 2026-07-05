@@ -6,7 +6,7 @@ const navItems = [
   { href: "/categories", label: "카테고리" },
   { href: "/archive", label: "아카이브" },
   { href: "/tags", label: "태그" },
-  { href: "/about", label: "About" },
+  { href: "/about", label: "소개" },
 ] as const;
 
 export function SiteHeader() {
