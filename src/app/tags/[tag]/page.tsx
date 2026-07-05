@@ -1,13 +1,12 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Pagination } from "@/components/pagination";
-import { PostCard } from "@/components/post-card";
-import { getAllTags, getPostsByTag, paginatePosts } from "@/lib/posts";
+import { PostTitleList } from "@/components/post-title-list";
+import { getAllTags, getPostsByTag } from "@/lib/posts";
 import { siteConfig } from "@/lib/site";
 
 type TagPageProps = {
   params: Promise<{ tag: string }>;
-  searchParams: Promise<{ page?: string }>;
 };
 
 export async function generateStaticParams() {
@@ -25,37 +24,29 @@ export async function generateMetadata({
   };
 }
 
-export default async function TagPage({ params, searchParams }: TagPageProps) {
+export default async function TagPage({ params }: TagPageProps) {
   const { tag } = await params;
-  const query = await searchParams;
   const decodedTag = decodeURIComponent(tag);
-  const page = Number(query.page ?? "1");
   const posts = getPostsByTag(decodedTag);
 
   if (!posts.length) {
     notFound();
   }
 
-  const pagination = paginatePosts(posts, Number.isNaN(page) ? 1 : page);
-
   return (
     <div className="space-y-8">
       <header className="space-y-2">
-        <p className="text-sm text-muted-foreground">Tag</p>
+        <p className="text-sm text-muted-foreground">
+          <Link href="/tags" className="hover:text-foreground">
+            Tags
+          </Link>
+          {" / "}
+          Tag
+        </p>
         <h1 className="text-3xl font-bold tracking-tight">#{decodedTag}</h1>
       </header>
 
-      <div className="space-y-4">
-        {pagination.items.map((post) => (
-          <PostCard key={post.slug} post={post} />
-        ))}
-      </div>
-
-      <Pagination
-        basePath={`/tags/${encodeURIComponent(decodedTag)}`}
-        currentPage={pagination.currentPage}
-        totalPages={pagination.totalPages}
-      />
+      <PostTitleList posts={posts} />
     </div>
   );
 }

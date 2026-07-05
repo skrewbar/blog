@@ -30,6 +30,26 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "yearly",
       priority: 0.3,
     },
+    {
+      url: `${siteConfig.url}/about`,
+      changeFrequency: "yearly",
+      priority: 0.4,
+    },
+    {
+      url: `${siteConfig.url}/categories`,
+      changeFrequency: "weekly",
+      priority: 0.5,
+    },
+    {
+      url: `${siteConfig.url}/tags`,
+      changeFrequency: "weekly",
+      priority: 0.5,
+    },
+    {
+      url: `${siteConfig.url}/archive`,
+      changeFrequency: "weekly",
+      priority: 0.5,
+    },
     ...categoryEntries,
     ...postEntries,
   ];

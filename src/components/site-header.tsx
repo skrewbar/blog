@@ -1,11 +1,15 @@
 import Link from "next/link";
-import { getAllCategories } from "@/lib/posts";
 import { siteConfig } from "@/lib/site";
 import { ThemeToggle } from "@/components/theme-toggle";
 
-export function SiteHeader() {
-  const categories = getAllCategories();
+const navItems = [
+  { href: "/categories", label: "카테고리" },
+  { href: "/archive", label: "아카이브" },
+  { href: "/tags", label: "태그" },
+  { href: "/about", label: "About" },
+] as const;
 
+export function SiteHeader() {
   return (
     <header className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur">
       <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-4">
@@ -14,13 +18,13 @@ export function SiteHeader() {
             {siteConfig.name}
           </Link>
           <nav className="hidden items-center gap-4 text-sm text-muted-foreground md:flex">
-            {categories.map((category) => (
+            {navItems.map((item) => (
               <Link
-                key={category}
-                href={`/${category}`}
+                key={item.href}
+                href={item.href}
                 className="transition-colors hover:text-foreground"
               >
-                {category}
+                {item.label}
               </Link>
             ))}
           </nav>

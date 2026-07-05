@@ -12,6 +12,9 @@ import { siteConfig } from "@/lib/site";
 const RESERVED_CATEGORIES = new Set([
   "posts",
   "tags",
+  "categories",
+  "archive",
+  "about",
   "api",
   "privacy",
   "rss.xml",
