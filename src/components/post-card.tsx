@@ -3,7 +3,6 @@ import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
-  CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
@@ -44,16 +43,16 @@ export function PostCard({ post }: PostCardProps) {
           </Link>
         </CardTitle>
         <CardDescription>{post.description}</CardDescription>
+        {post.tags.length > 0 ? (
+          <div className="flex flex-wrap gap-2 pt-1">
+            {post.tags.map((tag) => (
+              <Link key={tag} href={`/tags/${encodeURIComponent(tag)}`}>
+                <Badge variant="secondary">{tag}</Badge>
+              </Link>
+            ))}
+          </div>
+        ) : null}
       </CardHeader>
-      <CardContent>
-        <div className="flex flex-wrap gap-2">
-          {post.tags.map((tag) => (
-            <Link key={tag} href={`/tags/${encodeURIComponent(tag)}`}>
-              <Badge variant="secondary">{tag}</Badge>
-            </Link>
-          ))}
-        </div>
-      </CardContent>
     </Card>
   );
 }
