@@ -8,16 +8,16 @@ function getSupabaseUrl() {
   return url;
 }
 
-function getServiceRoleKey() {
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+function getSecretKey() {
+  const key = process.env.SUPABASE_SECRET_KEY;
   if (!key) {
-    throw new Error("SUPABASE_SERVICE_ROLE_KEY is not set");
+    throw new Error("SUPABASE_SECRET_KEY is not set");
   }
   return key;
 }
 
 export function createAdminClient() {
-  return createClient(getSupabaseUrl(), getServiceRoleKey(), {
+  return createClient(getSupabaseUrl(), getSecretKey(), {
     auth: {
       autoRefreshToken: false,
       persistSession: false,
@@ -28,6 +28,6 @@ export function createAdminClient() {
 export function isSupabaseConfigured() {
   return Boolean(
     process.env.NEXT_PUBLIC_SUPABASE_URL &&
-      process.env.SUPABASE_SERVICE_ROLE_KEY,
+      process.env.SUPABASE_SECRET_KEY,
   );
 }
