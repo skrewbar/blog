@@ -1,9 +1,9 @@
 import { Feed } from "feed";
-import { getPublishedPosts } from "@/lib/posts";
+import { getPublicPosts } from "@/lib/posts";
 import { siteConfig } from "@/lib/site";
 
 export async function GET() {
-  const posts = getPublishedPosts();
+  const posts = getPublicPosts();
   const feed = new Feed({
     title: siteConfig.name,
     description: siteConfig.description,

@@ -11,10 +11,22 @@ export function decodeCategoryParam(category: string): string {
   return decodeURIComponent(category);
 }
 
+const includeDrafts = process.env.NODE_ENV === "development";
+
+function sortPostsByDate(posts: Post[]): Post[] {
+  return posts.sort(
+    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+  );
+}
+
+export function getPublicPosts(): Post[] {
+  return sortPostsByDate(allPosts.filter((post) => !post.draft));
+}
+
 export function getPublishedPosts(): Post[] {
-  return allPosts
-    .filter((post) => !post.draft)
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  return sortPostsByDate(
+    allPosts.filter((post) => !post.draft || includeDrafts),
+  );
 }
 
 export function getPostBySlug(slug: string): Post | undefined {

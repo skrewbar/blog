@@ -58,8 +58,16 @@ export default async function PostPage({ params }: PostPageProps) {
 
   const postUrl = `${siteConfig.url}${post.permalink}`;
 
+  const isDraftPreview =
+    process.env.NODE_ENV === "development" && post.draft;
+
   return (
     <article className="space-y-8">
+      {isDraftPreview ? (
+        <div className="rounded-lg border border-amber-500/50 bg-amber-500/10 px-4 py-2 text-sm text-amber-700 dark:text-amber-300">
+          초안 — 개발 환경에서만 표시됩니다.
+        </div>
+      ) : null}
       <header className="space-y-4">
         <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
           <time dateTime={post.date}>{format(new Date(post.date), "yyyy.MM.dd")}</time>

@@ -1,9 +1,9 @@
 import type { MetadataRoute } from "next";
-import { getPublishedPosts } from "@/lib/posts";
+import { getPublicPosts } from "@/lib/posts";
 import { siteConfig } from "@/lib/site";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const posts = getPublishedPosts();
+  const posts = getPublicPosts();
 
   const postEntries: MetadataRoute.Sitemap = posts.map((post) => ({
     url: `${siteConfig.url}${post.permalink}`,

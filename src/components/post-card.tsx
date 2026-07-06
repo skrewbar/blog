@@ -15,8 +15,19 @@ type PostCardProps = {
 };
 
 export function PostCard({ post }: PostCardProps) {
+  const isDraftPreview =
+    process.env.NODE_ENV === "development" && post.draft;
+
   return (
-    <Card className="transition-colors hover:bg-muted/40">
+    <Card className="relative transition-colors hover:bg-muted/40">
+      {isDraftPreview ? (
+        <Badge
+          variant="outline"
+          className="absolute top-3 right-3 border-amber-500/50 bg-amber-500/10 text-amber-700 dark:text-amber-300"
+        >
+          초안
+        </Badge>
+      ) : null}
       <CardHeader>
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <time dateTime={post.date}>{format(new Date(post.date), "yyyy.MM.dd")}</time>
