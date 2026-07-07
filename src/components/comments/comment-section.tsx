@@ -138,7 +138,7 @@ function CommentItem({
         alt={`${comment.authorName} avatar`}
         width={40}
         height={40}
-        className="rounded-full"
+        className="h-10 w-10 shrink-0 rounded-full object-cover"
       />
       <div className="flex-1 space-y-2">
         <div className="flex flex-wrap items-center gap-2 text-sm">
