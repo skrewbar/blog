@@ -146,3 +146,12 @@ ALTER TABLE likes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE comments ENABLE ROW LEVEL SECURITY;
 
 -- No public policies: all access via service role from server
+
+-- Grants for server-side API (service_role bypasses RLS)
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.post_stats TO service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.view_logs TO service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.likes TO service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.comments TO service_role;
+
+GRANT EXECUTE ON FUNCTION public.increment_view_count(TEXT, TEXT) TO service_role;
+GRANT EXECUTE ON FUNCTION public.add_like(TEXT, TEXT) TO service_role;
