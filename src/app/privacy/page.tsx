@@ -26,6 +26,7 @@ export default function PrivacyPage() {
       <ul>
         <li>댓글 표시 및 Gravatar 프로필 이미지 제공</li>
         <li>대댓글 알림 이메일 발송 (사용자가 선택한 경우)</li>
+        <li>새 댓글 알림 이메일 발송 (블로그 운영자)</li>
         <li>조회수/좋아요 중복 방지</li>
         <li>스팸 및 악성 댓글 방지</li>
       </ul>

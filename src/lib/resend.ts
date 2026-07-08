@@ -19,6 +19,45 @@ type ReplyNotificationParams = {
   unsubscribeUrl: string;
 };
 
+type OwnerNotificationParams = {
+  authorName: string;
+  authorEmail: string;
+  postTitle: string;
+  postUrl: string;
+  commentBody: string;
+  isReply: boolean;
+};
+
+export async function sendOwnerNotification(
+  params: OwnerNotificationParams,
+): Promise<void> {
+  const resend = getResend();
+  const to = process.env.SITE_OWNER_EMAIL;
+  if (!resend || !to) {
+    return;
+  }
+
+  const from = process.env.RESEND_FROM_EMAIL ?? "onboarding@resend.dev";
+  const commentType = params.isReply ? "답글" : "댓글";
+
+  await resend.emails.send({
+    from,
+    to,
+    subject: `[${siteConfig.name}] 새 ${commentType}: ${params.postTitle}`,
+    html: `
+      <p><strong>${params.postTitle}</strong>에 새 ${commentType}이 달렸습니다.</p>
+      <p>
+        <strong>${params.authorName}</strong>
+        &lt;${params.authorEmail}&gt;
+      </p>
+      <blockquote style="border-left:3px solid #ccc;padding-left:12px;color:#555;">
+        ${params.commentBody}
+      </blockquote>
+      <p><a href="${params.postUrl}">글 보러 가기</a></p>
+    `,
+  });
+}
+
 export async function sendReplyNotification(
   params: ReplyNotificationParams,
 ): Promise<void> {

@@ -5,7 +5,7 @@ import {
   createUnsubscribeToken,
   createVisitorHash,
 } from "@/lib/hash";
-import { sendReplyNotification } from "@/lib/resend";
+import { sendOwnerNotification, sendReplyNotification } from "@/lib/resend";
 import { getClientIp, getUserAgent } from "@/lib/request";
 import { siteConfig } from "@/lib/site";
 import { createAdminClient, isSupabaseConfigured } from "@/lib/supabase/server";
@@ -199,23 +199,48 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: insertError.message }, { status: 500 });
     }
 
-    if (!spam && parentId) {
-      const { data: parent } = await supabase
-        .from("comments")
-        .select("author_name, author_email, notify, unsubscribe_token")
-        .eq("id", parentId)
-        .maybeSingle();
+    if (!spam) {
+      const resolvedPostUrl = postUrl || `${siteConfig.url}/posts/${slug}`;
+      const trimmedBody = commentBody.trim();
+      const ownerEmail = process.env.SITE_OWNER_EMAIL?.toLowerCase();
 
-      if (parent?.notify && parent.author_email) {
-        await sendReplyNotification({
-          to: parent.author_email,
-          parentAuthor: parent.author_name,
-          replyAuthor: authorName,
-          postTitle,
-          postUrl: postUrl || `${siteConfig.url}/posts/${slug}`,
-          replyBody: commentBody.trim(),
-          unsubscribeUrl: `${siteConfig.url}/api/unsubscribe?token=${parent.unsubscribe_token}`,
-        });
+      if (authorEmail.trim().toLowerCase() !== ownerEmail) {
+        try {
+          await sendOwnerNotification({
+            authorName: authorName.trim(),
+            authorEmail: authorEmail.trim().toLowerCase(),
+            postTitle,
+            postUrl: resolvedPostUrl,
+            commentBody: trimmedBody,
+            isReply: Boolean(parentId),
+          });
+        } catch (error) {
+          console.error("Failed to send owner notification:", error);
+        }
+      }
+
+      if (parentId) {
+        const { data: parent } = await supabase
+          .from("comments")
+          .select("author_name, author_email, notify, unsubscribe_token")
+          .eq("id", parentId)
+          .maybeSingle();
+
+        if (parent?.notify && parent.author_email) {
+          try {
+            await sendReplyNotification({
+              to: parent.author_email,
+              parentAuthor: parent.author_name,
+              replyAuthor: authorName,
+              postTitle,
+              postUrl: resolvedPostUrl,
+              replyBody: trimmedBody,
+              unsubscribeUrl: `${siteConfig.url}/api/unsubscribe?token=${parent.unsubscribe_token}`,
+            });
+          } catch (error) {
+            console.error("Failed to send reply notification:", error);
+          }
+        }
       }
     }
 
