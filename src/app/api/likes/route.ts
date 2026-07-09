@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createVisitorHash } from "@/lib/hash";
+import { getPostBySlug } from "@/lib/posts";
 import { getClientIp, getUserAgent } from "@/lib/request";
 import { createAdminClient, isSupabaseConfigured } from "@/lib/supabase/server";
 
@@ -15,6 +16,10 @@ export async function GET(request: Request) {
 
   if (!slug) {
     return NextResponse.json({ error: "slug is required" }, { status: 400 });
+  }
+
+  if (!getPostBySlug(slug)) {
+    return NextResponse.json({ error: "Post not found" }, { status: 404 });
   }
 
   const ip = await getClientIp();
