@@ -44,7 +44,9 @@ export function getPostsByTag(tag: string): Post[] {
 }
 
 export function getAllCategories(): string[] {
-  return [...new Set(getPublishedPosts().map((post) => post.category))].sort();
+  return [...new Set(getPublishedPosts().map((post) => post.category))].sort(
+    (a, b) => a.localeCompare(b),
+  );
 }
 
 export function getAllTags(): string[] {
@@ -52,9 +54,20 @@ export function getAllTags(): string[] {
   return [...new Set(tags)].sort((a, b) => a.localeCompare(b));
 }
 
+export function parsePageParam(value?: string): number {
+  const parsed = Math.trunc(Number(value ?? "1"));
+
+  if (!Number.isFinite(parsed) || parsed < 1) {
+    return 1;
+  }
+
+  return parsed;
+}
+
 export function paginatePosts<T>(items: T[], page: number, perPage = siteConfig.postsPerPage) {
+  const safePage = Math.trunc(page);
   const totalPages = Math.max(1, Math.ceil(items.length / perPage));
-  const currentPage = Math.min(Math.max(page, 1), totalPages);
+  const currentPage = Math.min(Math.max(safePage, 1), totalPages);
   const start = (currentPage - 1) * perPage;
   const end = start + perPage;
 

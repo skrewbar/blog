@@ -8,6 +8,7 @@ import {
   getCategoryHref,
   getPostsByCategory,
   paginatePosts,
+  parsePageParam,
 } from "@/lib/posts";
 import { siteConfig } from "@/lib/site";
 
@@ -55,14 +56,13 @@ export default async function CategoryPage({
   }
 
   const query = await searchParams;
-  const page = Number(query.page ?? "1");
   const posts = getPostsByCategory(decodedCategory);
 
   if (!posts.length && !getAllCategories().includes(decodedCategory)) {
     notFound();
   }
 
-  const pagination = paginatePosts(posts, Number.isNaN(page) ? 1 : page);
+  const pagination = paginatePosts(posts, parsePageParam(query.page));
 
   return (
     <div className="space-y-8">

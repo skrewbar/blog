@@ -1,6 +1,6 @@
 import { Pagination } from "@/components/pagination";
 import { PostCard } from "@/components/post-card";
-import { getPublishedPosts, paginatePosts } from "@/lib/posts";
+import { getPublishedPosts, paginatePosts, parsePageParam } from "@/lib/posts";
 import { siteConfig } from "@/lib/site";
 
 type HomePageProps = {
@@ -9,9 +9,8 @@ type HomePageProps = {
 
 export default async function HomePage({ searchParams }: HomePageProps) {
   const params = await searchParams;
-  const page = Number(params.page ?? "1");
   const posts = getPublishedPosts();
-  const pagination = paginatePosts(posts, Number.isNaN(page) ? 1 : page);
+  const pagination = paginatePosts(posts, parsePageParam(params.page));
 
   return (
     <div className="space-y-8">
