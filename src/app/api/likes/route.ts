@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createVisitorHash } from "@/lib/hash";
 import { getPostBySlug } from "@/lib/posts";
 import { getClientIp, getUserAgent } from "@/lib/request";
+import { parseLikeRpcResult } from "@/lib/supabase/rpc";
 import { createAdminClient, isSupabaseConfigured } from "@/lib/supabase/server";
 
 export const runtime = "nodejs";
@@ -69,7 +70,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    const result = data as { like_count: number; liked: boolean };
+    const result = parseLikeRpcResult(data);
 
     return NextResponse.json({
       likeCount: result.like_count,

@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { createVisitorHash } from "@/lib/hash";
+import { getPostBySlug } from "@/lib/posts";
 import { getClientIp, getUserAgent } from "@/lib/request";
+import { parseViewRpcResult } from "@/lib/supabase/rpc";
 import { createAdminClient, isSupabaseConfigured } from "@/lib/supabase/server";
 
 export const runtime = "nodejs";
@@ -35,7 +37,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    const result = data as { view_count: number; incremented: boolean };
+    const result = parseViewRpcResult(data);
 
     return NextResponse.json({
       viewCount: result.view_count,
