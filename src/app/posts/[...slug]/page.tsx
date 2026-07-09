@@ -56,8 +56,6 @@ export default async function PostPage({ params }: PostPageProps) {
     notFound();
   }
 
-  const postUrl = `${siteConfig.url}${post.permalink}`;
-
   const isDraftPreview =
     process.env.NODE_ENV === "development" && post.draft;
 
@@ -112,7 +110,7 @@ export default async function PostPage({ params }: PostPageProps) {
 
       <Separator />
 
-      <CommentSection slug={post.slug} postTitle={post.title} postUrl={postUrl} />
+      <CommentSection key={post.slug} slug={post.slug} />
     </article>
   );
 }

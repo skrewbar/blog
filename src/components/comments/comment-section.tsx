@@ -20,48 +20,54 @@ type Comment = {
 
 type CommentSectionProps = {
   slug: string;
-  postTitle: string;
-  postUrl: string;
 };
 
-export function CommentSection({ slug, postTitle, postUrl }: CommentSectionProps) {
+async function loadCommentData(slug: string): Promise<Comment[]> {
+  const response = await fetch(`/api/comments?slug=${encodeURIComponent(slug)}`);
+  const data = await response.json();
+  return (data.comments ?? []) as Comment[];
+}
+
+export function CommentSection({ slug }: CommentSectionProps) {
   const [comments, setComments] = useState<Comment[]>([]);
   const [loading, setLoading] = useState(true);
   const [replyTo, setReplyTo] = useState<Comment | null>(null);
 
-  const loadComments = useCallback(async () => {
-    const response = await fetch(`/api/comments?slug=${encodeURIComponent(slug)}`);
-    const data = await response.json();
-    setComments(data.comments ?? []);
-    setLoading(false);
-  }, [slug]);
-
   useEffect(() => {
     let cancelled = false;
 
-    async function fetchComments() {
-      try {
-        const response = await fetch(`/api/comments?slug=${encodeURIComponent(slug)}`);
-        const data = await response.json();
+    void loadCommentData(slug)
+      .then((nextComments) => {
         if (!cancelled) {
-          setComments(data.comments ?? []);
+          setComments(nextComments);
         }
-      } catch {
+      })
+      .catch(() => {
         if (!cancelled) {
           setComments([]);
         }
-      } finally {
+      })
+      .finally(() => {
         if (!cancelled) {
           setLoading(false);
         }
-      }
-    }
-
-    void fetchComments();
+      });
 
     return () => {
       cancelled = true;
     };
+  }, [slug]);
+
+  const refreshComments = useCallback(async () => {
+    setLoading(true);
+
+    try {
+      setComments(await loadCommentData(slug));
+    } catch {
+      setComments([]);
+    } finally {
+      setLoading(false);
+    }
   }, [slug]);
 
   const topLevel = comments.filter((comment) => !comment.parentId);
@@ -83,13 +89,11 @@ export function CommentSection({ slug, postTitle, postUrl }: CommentSectionProps
 
       <CommentForm
         slug={slug}
-        postTitle={postTitle}
-        postUrl={postUrl}
         parentId={replyTo?.id ?? null}
         parentAuthor={replyTo?.authorName}
         onSuccess={() => {
           setReplyTo(null);
-          void loadComments();
+          void refreshComments();
         }}
         onCancel={replyTo ? () => setReplyTo(null) : undefined}
       />

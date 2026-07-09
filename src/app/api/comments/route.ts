@@ -5,6 +5,7 @@ import {
   createUnsubscribeToken,
   createVisitorHash,
 } from "@/lib/hash";
+import { getPostBySlug } from "@/lib/posts";
 import { sendOwnerNotification, sendReplyNotification } from "@/lib/resend";
 import { getClientIp, getUserAgent } from "@/lib/request";
 import { siteConfig } from "@/lib/site";
@@ -79,8 +80,6 @@ export async function POST(request: Request) {
   try {
     const body = (await request.json()) as {
       slug?: string;
-      postTitle?: string;
-      postUrl?: string;
       parentId?: string | null;
       authorName?: string;
       authorEmail?: string;
@@ -95,8 +94,6 @@ export async function POST(request: Request) {
 
     const {
       slug,
-      postTitle = "",
-      postUrl = "",
       parentId = null,
       authorName,
       authorEmail,
@@ -110,6 +107,14 @@ export async function POST(request: Request) {
         { status: 400 },
       );
     }
+
+    const post = getPostBySlug(slug);
+    if (!post) {
+      return NextResponse.json({ error: "Post not found" }, { status: 404 });
+    }
+
+    const postTitle = post.title;
+    const postUrl = `${siteConfig.url}${post.permalink}`;
 
     const ip = await getClientIp();
     const userAgent = await getUserAgent();
@@ -170,7 +175,7 @@ export async function POST(request: Request) {
       author: authorName,
       authorEmail,
       content: commentBody,
-      permalink: postUrl || `${siteConfig.url}/posts/${slug}`,
+      permalink: postUrl,
     });
 
     const unsubscribeToken = createUnsubscribeToken();
@@ -200,7 +205,6 @@ export async function POST(request: Request) {
     }
 
     if (!spam) {
-      const resolvedPostUrl = postUrl || `${siteConfig.url}/posts/${slug}`;
       const trimmedBody = commentBody.trim();
       const ownerEmail = process.env.SITE_OWNER_EMAIL?.toLowerCase();
 
@@ -210,7 +214,7 @@ export async function POST(request: Request) {
             authorName: authorName.trim(),
             authorEmail: authorEmail.trim().toLowerCase(),
             postTitle,
-            postUrl: resolvedPostUrl,
+            postUrl,
             commentBody: trimmedBody,
             isReply: Boolean(parentId),
           });
@@ -233,13 +237,12 @@ export async function POST(request: Request) {
               parentAuthor: parent.author_name,
               replyAuthor: authorName,
               postTitle,
-              postUrl: resolvedPostUrl,
+            postUrl,
               replyBody: trimmedBody,
               unsubscribeUrl: `${siteConfig.url}/api/unsubscribe?token=${parent.unsubscribe_token}`,
             });
           } catch (error) {
             console.error("Failed to send reply notification:", error);
-          }
         }
       }
     }

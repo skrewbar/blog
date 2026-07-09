@@ -8,8 +8,6 @@ import { Textarea } from "@/components/ui/textarea";
 
 type CommentFormProps = {
   slug: string;
-  postTitle: string;
-  postUrl: string;
   parentId?: string | null;
   parentAuthor?: string;
   onSuccess: () => void;
@@ -18,8 +16,6 @@ type CommentFormProps = {
 
 export function CommentForm({
   slug,
-  postTitle,
-  postUrl,
   parentId = null,
   parentAuthor,
   onSuccess,
@@ -44,8 +40,6 @@ export function CommentForm({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           slug,
-          postTitle,
-          postUrl,
           parentId,
           authorName,
           authorEmail,
