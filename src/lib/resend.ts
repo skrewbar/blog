@@ -1,5 +1,10 @@
 import { Resend } from "resend";
 import { siteConfig } from "@/lib/site";
+import {
+  escapeHtml,
+  escapeHtmlAttribute,
+  escapeHtmlWithLineBreaks,
+} from "@/lib/utils";
 
 function getResend() {
   const apiKey = process.env.RESEND_API_KEY;
@@ -39,21 +44,26 @@ export async function sendOwnerNotification(
 
   const from = process.env.RESEND_FROM_EMAIL ?? "onboarding@resend.dev";
   const commentType = params.isReply ? "답글" : "댓글";
+  const postTitle = escapeHtml(params.postTitle);
+  const authorName = escapeHtml(params.authorName);
+  const authorEmail = escapeHtml(params.authorEmail);
+  const commentBody = escapeHtmlWithLineBreaks(params.commentBody);
+  const postUrl = escapeHtmlAttribute(params.postUrl);
 
   await resend.emails.send({
     from,
     to,
     subject: `[${siteConfig.name}] 새 ${commentType}: ${params.postTitle}`,
     html: `
-      <p><strong>${params.postTitle}</strong>에 새 ${commentType}이 달렸습니다.</p>
+      <p><strong>${postTitle}</strong>에 새 ${commentType}이 달렸습니다.</p>
       <p>
-        <strong>${params.authorName}</strong>
-        &lt;${params.authorEmail}&gt;
+        <strong>${authorName}</strong>
+        &lt;${authorEmail}&gt;
       </p>
       <blockquote style="border-left:3px solid #ccc;padding-left:12px;color:#555;">
-        ${params.commentBody}
+        ${commentBody}
       </blockquote>
-      <p><a href="${params.postUrl}">글 보러 가기</a></p>
+      <p><a href="${postUrl}">글 보러 가기</a></p>
     `,
   });
 }
@@ -67,20 +77,25 @@ export async function sendReplyNotification(
   }
 
   const from = process.env.RESEND_FROM_EMAIL ?? "onboarding@resend.dev";
+  const parentAuthor = escapeHtml(params.parentAuthor);
+  const replyAuthor = escapeHtml(params.replyAuthor);
+  const replyBody = escapeHtmlWithLineBreaks(params.replyBody);
+  const postUrl = escapeHtmlAttribute(params.postUrl);
+  const unsubscribeUrl = escapeHtmlAttribute(params.unsubscribeUrl);
 
   await resend.emails.send({
     from,
     to: params.to,
     subject: `[${siteConfig.name}] ${params.postTitle}에 새 댓글이 달렸습니다`,
     html: `
-      <p>안녕하세요 ${params.parentAuthor}님,</p>
-      <p><strong>${params.replyAuthor}</strong>님이 회원님의 댓글에 답글을 남겼습니다.</p>
+      <p>안녕하세요 ${parentAuthor}님,</p>
+      <p><strong>${replyAuthor}</strong>님이 회원님의 댓글에 답글을 남겼습니다.</p>
       <blockquote style="border-left:3px solid #ccc;padding-left:12px;color:#555;">
-        ${params.replyBody}
+        ${replyBody}
       </blockquote>
-      <p><a href="${params.postUrl}">글 보러 가기</a></p>
+      <p><a href="${postUrl}">글 보러 가기</a></p>
       <p style="font-size:12px;color:#888;">
-        더 이상 알림을 받지 않으려면 <a href="${params.unsubscribeUrl}">수신 거부</a>를 클릭하세요.
+        더 이상 알림을 받지 않으려면 <a href="${unsubscribeUrl}">수신 거부</a>를 클릭하세요.
       </p>
     `,
   });
