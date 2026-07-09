@@ -29,6 +29,16 @@ type CommentRow = {
   created_at: string;
 };
 
+type ParentCommentRow = Pick<
+  CommentRow,
+  | "id"
+  | "parent_id"
+  | "author_name"
+  | "author_email"
+  | "notify"
+  | "unsubscribe_token"
+>;
+
 export async function GET(request: Request) {
   if (!isSupabaseConfigured()) {
     return NextResponse.json({ comments: [] });
@@ -142,10 +152,14 @@ export async function POST(request: Request) {
       );
     }
 
+    let parentComment: ParentCommentRow | null = null;
+
     if (parentId) {
-      const { data: parentComment, error: parentError } = await supabase
+      const { data, error: parentError } = await supabase
         .from("comments")
-        .select("id, parent_id")
+        .select(
+          "id, parent_id, author_name, author_email, notify, unsubscribe_token",
+        )
         .eq("id", parentId)
         .eq("slug", slug)
         .maybeSingle();
@@ -154,19 +168,21 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: parentError.message }, { status: 500 });
       }
 
-      if (!parentComment) {
+      if (!data) {
         return NextResponse.json(
           { error: "Parent comment not found" },
           { status: 404 },
         );
       }
 
-      if (parentComment.parent_id) {
+      if (data.parent_id) {
         return NextResponse.json(
           { error: "Replies are limited to one level" },
           { status: 400 },
         );
       }
+
+      parentComment = data;
     }
 
     const spam = await isSpamComment({
@@ -223,26 +239,19 @@ export async function POST(request: Request) {
         }
       }
 
-      if (parentId) {
-        const { data: parent } = await supabase
-          .from("comments")
-          .select("author_name, author_email, notify, unsubscribe_token")
-          .eq("id", parentId)
-          .maybeSingle();
-
-        if (parent?.notify && parent.author_email) {
-          try {
-            await sendReplyNotification({
-              to: parent.author_email,
-              parentAuthor: parent.author_name,
-              replyAuthor: authorName,
-              postTitle,
+      if (parentComment?.notify && parentComment.author_email) {
+        try {
+          await sendReplyNotification({
+            to: parentComment.author_email,
+            parentAuthor: parentComment.author_name,
+            replyAuthor: authorName,
+            postTitle,
             postUrl,
-              replyBody: trimmedBody,
-              unsubscribeUrl: `${siteConfig.url}/api/unsubscribe?token=${parent.unsubscribe_token}`,
-            });
-          } catch (error) {
-            console.error("Failed to send reply notification:", error);
+            replyBody: trimmedBody,
+            unsubscribeUrl: `${siteConfig.url}/api/unsubscribe?token=${parentComment.unsubscribe_token}`,
+          });
+        } catch (error) {
+          console.error("Failed to send reply notification:", error);
         }
       }
     }
