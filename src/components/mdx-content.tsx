@@ -2,18 +2,16 @@
 
 import { createElement, useMemo } from "react";
 import * as runtime from "react/jsx-runtime";
-import { MdxFigure } from "@/components/mdx-figure";
+import { mdxComponents } from "@/mdx-components";
+
+type MdxComponents = Record<string, React.ElementType>;
 
 function getMDXComponent(code: string) {
   const fn = new Function(code);
   return fn({ ...runtime }).default as React.ComponentType<{
-    components?: Record<string, React.ComponentType>;
+    components?: MdxComponents;
   }>;
 }
-
-const mdxComponents = {
-  figure: MdxFigure,
-};
 
 type MdxContentProps = {
   code: string;
