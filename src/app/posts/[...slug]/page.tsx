@@ -91,6 +91,7 @@ export default async function PostPage({ params }: PostPageProps) {
               src={post.cover}
               alt={post.title}
               fill
+              sizes="(min-width: 1024px) 992px, calc(100vw - 2rem)"
               className="object-cover"
               priority
             />
