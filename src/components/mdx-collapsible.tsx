@@ -18,12 +18,12 @@ export function Collapsible({
   return (
     <details
       className={cn(
-        "group my-6 overflow-hidden rounded-lg border border-border bg-muted/30 not-prose",
+        "group my-6 overflow-hidden rounded-lg border border-border bg-muted/30",
         className,
       )}
       open={defaultOpen || undefined}
     >
-      <summary className="flex cursor-pointer list-none items-center gap-2 px-4 py-3 text-sm font-medium text-foreground transition-colors hover:bg-muted/50 [&::-webkit-details-marker]:hidden">
+      <summary className="not-prose flex cursor-pointer list-none items-center gap-2 px-4 py-3 text-sm font-medium text-foreground transition-colors hover:bg-muted/50 [&::-webkit-details-marker]:hidden">
         <ChevronRight className="size-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-90" />
         {title}
       </summary>
