@@ -87,8 +87,8 @@ export function PostStats({ slug }: PostStatsProps) {
   if (loading) {
     return (
       <div className="flex items-center gap-4">
-        <Skeleton className="h-5 w-20" />
-        <Skeleton className="h-9 w-24" />
+        <Skeleton className="h-5 w-16" />
+        <Skeleton className="h-7 w-24" />
       </div>
     );
   }
