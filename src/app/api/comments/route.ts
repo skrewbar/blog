@@ -1,69 +1,58 @@
-import { NextResponse } from "next/server";
-import { isSpamComment } from "@/lib/akismet";
-import {
-  createGravatarHash,
-  createUnsubscribeToken,
-  createVisitorHash,
-} from "@/lib/hash";
-import { getPostBySlug } from "@/lib/posts";
-import { sendOwnerNotification, sendReplyNotification } from "@/lib/resend";
-import { getClientIp, getUserAgent } from "@/lib/request";
-import { siteConfig } from "@/lib/site";
-import { createAdminClient, isSupabaseConfigured } from "@/lib/supabase/server";
+import { NextResponse } from "next/server"
+import { isSpamComment } from "@/lib/akismet"
+import { createGravatarHash, createUnsubscribeToken, createVisitorHash } from "@/lib/hash"
+import { getPostBySlug } from "@/lib/posts"
+import { sendOwnerNotification, sendReplyNotification } from "@/lib/resend"
+import { getClientIp, getUserAgent } from "@/lib/request"
+import { siteConfig } from "@/lib/site"
+import { createAdminClient, isSupabaseConfigured } from "@/lib/supabase/server"
 
-export const runtime = "nodejs";
+export const runtime = "nodejs"
 
-const RATE_LIMIT_WINDOW_MINUTES = 5;
-const RATE_LIMIT_MAX_COMMENTS = 3;
+const RATE_LIMIT_WINDOW_MINUTES = 5
+const RATE_LIMIT_MAX_COMMENTS = 3
 
 type CommentRow = {
-  id: string;
-  slug: string;
-  parent_id: string | null;
-  author_name: string;
-  author_email: string;
-  gravatar_hash: string;
-  body: string;
-  notify: boolean;
-  unsubscribe_token: string;
-  created_at: string;
-};
+  id: string
+  slug: string
+  parent_id: string | null
+  author_name: string
+  author_email: string
+  gravatar_hash: string
+  body: string
+  notify: boolean
+  unsubscribe_token: string
+  created_at: string
+}
 
 type ParentCommentRow = Pick<
   CommentRow,
-  | "id"
-  | "parent_id"
-  | "author_name"
-  | "author_email"
-  | "notify"
-  | "unsubscribe_token"
->;
+  "id" | "parent_id" | "author_name" | "author_email" | "notify" | "unsubscribe_token"
+>
 
 export async function GET(request: Request) {
   if (!isSupabaseConfigured()) {
-    return NextResponse.json({ comments: [] });
+    return NextResponse.json({ comments: [] })
   }
 
-  const { searchParams } = new URL(request.url);
-  const slug = searchParams.get("slug");
+  const { searchParams } = new URL(request.url)
+  const slug = searchParams.get("slug")
 
   if (!slug) {
-    return NextResponse.json({ error: "slug is required" }, { status: 400 });
+    return NextResponse.json({ error: "slug is required" }, { status: 400 })
   }
 
-  const supabase = createAdminClient();
+  const supabase = createAdminClient()
   const { data, error } = await supabase
     .from("comments")
-    .select(
-      "id, slug, parent_id, author_name, gravatar_hash, body, created_at",
-    )
+    .select("id, slug, parent_id, author_name, gravatar_hash, body, created_at")
     .eq("slug", slug)
     .eq("is_spam", false)
     .eq("is_hidden", false)
-    .order("created_at", { ascending: true });
+    .order("created_at", { ascending: true })
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: error.message }, { status: 500 })
   }
 
   const comments = (data ?? []).map((comment) => ({
@@ -74,115 +63,89 @@ export async function GET(request: Request) {
     gravatarHash: comment.gravatar_hash,
     body: comment.body,
     createdAt: comment.created_at,
-  }));
+  }))
 
-  return NextResponse.json({ comments });
+  return NextResponse.json({ comments })
 }
 
 export async function POST(request: Request) {
   if (!isSupabaseConfigured()) {
-    return NextResponse.json(
-      { error: "Comments are not configured" },
-      { status: 503 },
-    );
+    return NextResponse.json({ error: "Comments are not configured" }, { status: 503 })
   }
 
   try {
     const body = (await request.json()) as {
-      slug?: string;
-      parentId?: string | null;
-      authorName?: string;
-      authorEmail?: string;
-      body?: string;
-      notify?: boolean;
-      website?: string;
-    };
+      slug?: string
+      parentId?: string | null
+      authorName?: string
+      authorEmail?: string
+      body?: string
+      notify?: boolean
+      website?: string
+    }
 
     if (body.website) {
-      return NextResponse.json({ success: true });
+      return NextResponse.json({ success: true })
     }
 
-    const {
-      slug,
-      parentId = null,
-      authorName,
-      authorEmail,
-      body: commentBody,
-      notify = false,
-    } = body;
+    const { slug, parentId = null, authorName, authorEmail, body: commentBody, notify = false } = body
 
     if (!slug || !authorName || !authorEmail || !commentBody) {
-      return NextResponse.json(
-        { error: "Required fields are missing" },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: "Required fields are missing" }, { status: 400 })
     }
 
-    const post = getPostBySlug(slug);
+    const post = getPostBySlug(slug)
     if (!post) {
-      return NextResponse.json({ error: "Post not found" }, { status: 404 });
+      return NextResponse.json({ error: "Post not found" }, { status: 404 })
     }
 
-    const postTitle = post.title;
-    const postUrl = `${siteConfig.url}${post.permalink}`;
+    const postTitle = post.title
+    const postUrl = `${siteConfig.url}${post.permalink}`
 
-    const ip = await getClientIp();
-    const userAgent = await getUserAgent();
-    const ipHash = createVisitorHash(ip, userAgent);
-    const supabase = createAdminClient();
+    const ip = await getClientIp()
+    const userAgent = await getUserAgent()
+    const ipHash = createVisitorHash(ip, userAgent)
+    const supabase = createAdminClient()
 
-    const since = new Date(
-      Date.now() - RATE_LIMIT_WINDOW_MINUTES * 60 * 1000,
-    ).toISOString();
+    const since = new Date(Date.now() - RATE_LIMIT_WINDOW_MINUTES * 60 * 1000).toISOString()
 
     const { count: recentCount, error: rateError } = await supabase
       .from("comments")
       .select("id", { count: "exact", head: true })
       .eq("ip_hash", ipHash)
-      .gte("created_at", since);
+      .gte("created_at", since)
 
     if (rateError) {
-      return NextResponse.json({ error: rateError.message }, { status: 500 });
+      return NextResponse.json({ error: rateError.message }, { status: 500 })
     }
 
     if ((recentCount ?? 0) >= RATE_LIMIT_MAX_COMMENTS) {
-      return NextResponse.json(
-        { error: "댓글을 너무 자주 작성했습니다. 잠시 후 다시 시도해주세요." },
-        { status: 429 },
-      );
+      return NextResponse.json({ error: "댓글을 너무 자주 작성했습니다. 잠시 후 다시 시도해주세요." }, { status: 429 })
     }
 
-    let parentComment: ParentCommentRow | null = null;
+    let parentComment: ParentCommentRow | null = null
 
     if (parentId) {
       const { data, error: parentError } = await supabase
         .from("comments")
-        .select(
-          "id, parent_id, author_name, author_email, notify, unsubscribe_token",
-        )
+        .select("id, parent_id, author_name, author_email, notify, unsubscribe_token")
         .eq("id", parentId)
         .eq("slug", slug)
-        .maybeSingle();
+        .maybeSingle()
 
       if (parentError) {
-        return NextResponse.json({ error: parentError.message }, { status: 500 });
+        return NextResponse.json({ error: parentError.message }, { status: 500 })
       }
 
       if (!data) {
-        return NextResponse.json(
-          { error: "Parent comment not found" },
-          { status: 404 },
-        );
+        return NextResponse.json({ error: "Parent comment not found" }, { status: 404 })
       }
 
       if (data.parent_id) {
-        return NextResponse.json(
-          { error: "Replies are limited to one level" },
-          { status: 400 },
-        );
+        return NextResponse.json({ error: "Replies are limited to one level" }, { status: 400 })
       }
 
-      parentComment = data;
+      parentComment = data
     }
 
     const spam = await isSpamComment({
@@ -192,9 +155,9 @@ export async function POST(request: Request) {
       authorEmail,
       content: commentBody,
       permalink: postUrl,
-    });
+    })
 
-    const unsubscribeToken = createUnsubscribeToken();
+    const unsubscribeToken = createUnsubscribeToken()
 
     const { data: inserted, error: insertError } = await supabase
       .from("comments")
@@ -214,15 +177,15 @@ export async function POST(request: Request) {
       .select(
         "id, slug, parent_id, author_name, author_email, gravatar_hash, body, notify, unsubscribe_token, created_at",
       )
-      .single();
+      .single()
 
     if (insertError) {
-      return NextResponse.json({ error: insertError.message }, { status: 500 });
+      return NextResponse.json({ error: insertError.message }, { status: 500 })
     }
 
     if (!spam) {
-      const trimmedBody = commentBody.trim();
-      const ownerEmail = process.env.SITE_OWNER_EMAIL?.toLowerCase();
+      const trimmedBody = commentBody.trim()
+      const ownerEmail = process.env.SITE_OWNER_EMAIL?.toLowerCase()
 
       if (authorEmail.trim().toLowerCase() !== ownerEmail) {
         try {
@@ -233,9 +196,9 @@ export async function POST(request: Request) {
             postUrl,
             commentBody: trimmedBody,
             isReply: Boolean(parentId),
-          });
+          })
         } catch (error) {
-          console.error("Failed to send owner notification:", error);
+          console.error("Failed to send owner notification:", error)
         }
       }
 
@@ -249,18 +212,18 @@ export async function POST(request: Request) {
             postUrl,
             replyBody: trimmedBody,
             unsubscribeUrl: `${siteConfig.url}/api/unsubscribe?token=${parentComment.unsubscribe_token}`,
-          });
+          })
         } catch (error) {
-          console.error("Failed to send reply notification:", error);
+          console.error("Failed to send reply notification:", error)
         }
       }
     }
 
     if (spam) {
-      return NextResponse.json({ success: true });
+      return NextResponse.json({ success: true })
     }
 
-    const comment = inserted as CommentRow;
+    const comment = inserted as CommentRow
 
     return NextResponse.json({
       comment: {
@@ -272,9 +235,9 @@ export async function POST(request: Request) {
         body: comment.body,
         createdAt: comment.created_at,
       },
-    });
+    })
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unknown error";
-    return NextResponse.json({ error: message }, { status: 500 });
+    const message = error instanceof Error ? error.message : "Unknown error"
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }

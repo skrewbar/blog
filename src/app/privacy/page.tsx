@@ -1,19 +1,16 @@
-import type { Metadata } from "next";
-import { siteConfig } from "@/lib/site";
+import type { Metadata } from "next"
+import { siteConfig } from "@/lib/site"
 
 export const metadata: Metadata = {
   title: "개인정보 처리방침",
   description: `${siteConfig.name} 개인정보 처리방침`,
-};
+}
 
 export default function PrivacyPage() {
   return (
     <article className="prose prose-neutral dark:prose-invert max-w-none">
       <h1>개인정보 처리방침</h1>
-      <p>
-        {siteConfig.name}(이하 &quot;블로그&quot;)는 댓글 서비스 제공을 위해 아래와
-        같이 개인정보를 처리합니다.
-      </p>
+      <p>{siteConfig.name}(이하 &quot;블로그&quot;)는 댓글 서비스 제공을 위해 아래와 같이 개인정보를 처리합니다.</p>
 
       <h2>수집하는 개인정보</h2>
       <ul>
@@ -33,8 +30,8 @@ export default function PrivacyPage() {
 
       <h2>보관 기간</h2>
       <p>
-        댓글 정보는 삭제 요청 또는 운영자 판단에 따라 삭제될 수 있습니다.
-        조회 로그는 24시간 중복 방지 목적으로 활용됩니다.
+        댓글 정보는 삭제 요청 또는 운영자 판단에 따라 삭제될 수 있습니다. 조회 로그는 24시간 중복 방지 목적으로
+        활용됩니다.
       </p>
 
       <h2>제3자 제공</h2>
@@ -46,9 +43,7 @@ export default function PrivacyPage() {
       </ul>
 
       <h2>문의</h2>
-      <p>
-        개인정보 관련 문의는 블로그 운영자에게 연락해 주세요.
-      </p>
+      <p>개인정보 관련 문의는 블로그 운영자에게 연락해 주세요.</p>
     </article>
-  );
+  )
 }

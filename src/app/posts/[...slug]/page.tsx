@@ -1,36 +1,34 @@
-import type { Metadata } from "next";
-import Image from "next/image";
-import Link from "next/link";
-import { notFound } from "next/navigation";
-import { format } from "date-fns";
-import { CommentSection } from "@/components/comments/comment-section";
-import { MdxContent } from "@/components/mdx-content";
-import { PostStats } from "@/components/post-stats";
-import { TableOfContents } from "@/components/table-of-contents";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { getCategoryHref, getPostBySlug, getPublishedPosts } from "@/lib/posts";
-import { siteConfig } from "@/lib/site";
+import type { Metadata } from "next"
+import Image from "next/image"
+import Link from "next/link"
+import { notFound } from "next/navigation"
+import { format } from "date-fns"
+import { CommentSection } from "@/components/comments/comment-section"
+import { MdxContent } from "@/components/mdx-content"
+import { PostStats } from "@/components/post-stats"
+import { TableOfContents } from "@/components/table-of-contents"
+import { Badge } from "@/components/ui/badge"
+import { Separator } from "@/components/ui/separator"
+import { getCategoryHref, getPostBySlug, getPublishedPosts } from "@/lib/posts"
+import { siteConfig } from "@/lib/site"
 
 type PostPageProps = {
-  params: Promise<{ slug: string[] }>;
-};
+  params: Promise<{ slug: string[] }>
+}
 
 export async function generateStaticParams() {
   return getPublishedPosts().map((post) => ({
     slug: [post.slug],
-  }));
+  }))
 }
 
-export async function generateMetadata({
-  params,
-}: PostPageProps): Promise<Metadata> {
-  const { slug } = await params;
-  const postSlug = slug.join("/");
-  const post = getPostBySlug(postSlug);
+export async function generateMetadata({ params }: PostPageProps): Promise<Metadata> {
+  const { slug } = await params
+  const postSlug = slug.join("/")
+  const post = getPostBySlug(postSlug)
 
   if (!post) {
-    return { title: "Post not found" };
+    return { title: "Post not found" }
   }
 
   return {
@@ -44,20 +42,19 @@ export async function generateMetadata({
       url: `${siteConfig.url}${post.permalink}`,
       images: post.cover ? [{ url: post.cover }] : undefined,
     },
-  };
+  }
 }
 
 export default async function PostPage({ params }: PostPageProps) {
-  const { slug } = await params;
-  const postSlug = slug.join("/");
-  const post = getPostBySlug(postSlug);
+  const { slug } = await params
+  const postSlug = slug.join("/")
+  const post = getPostBySlug(postSlug)
 
   if (!post) {
-    notFound();
+    notFound()
   }
 
-  const isDraftPreview =
-    process.env.NODE_ENV === "development" && post.draft;
+  const isDraftPreview = process.env.NODE_ENV === "development" && post.draft
 
   return (
     <article className="space-y-8">
@@ -67,7 +64,7 @@ export default async function PostPage({ params }: PostPageProps) {
         </div>
       ) : null}
       <header className="space-y-4">
-        <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+        <div className="text-muted-foreground flex flex-wrap items-center gap-2 text-sm">
           <time dateTime={post.date}>{format(new Date(post.date), "yyyy.MM.dd")}</time>
           <span>·</span>
           <span>{post.readingTime}</span>
@@ -77,7 +74,7 @@ export default async function PostPage({ params }: PostPageProps) {
           </Link>
         </div>
         <h1 className="text-4xl font-bold tracking-tight">{post.title}</h1>
-        <p className="text-lg text-muted-foreground">{post.description}</p>
+        <p className="text-muted-foreground text-lg">{post.description}</p>
         {post.tags.length ? (
           <div className="flex flex-wrap gap-2">
             {post.tags.map((tag) => (
@@ -115,5 +112,5 @@ export default async function PostPage({ params }: PostPageProps) {
 
       <CommentSection key={post.slug} slug={post.slug} />
     </article>
-  );
+  )
 }

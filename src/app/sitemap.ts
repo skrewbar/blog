@@ -1,23 +1,23 @@
-import type { MetadataRoute } from "next";
-import { getPublicPosts } from "@/lib/posts";
-import { siteConfig } from "@/lib/site";
+import type { MetadataRoute } from "next"
+import { getPublicPosts } from "@/lib/posts"
+import { siteConfig } from "@/lib/site"
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const posts = getPublicPosts();
+  const posts = getPublicPosts()
 
   const postEntries: MetadataRoute.Sitemap = posts.map((post) => ({
     url: `${siteConfig.url}${post.permalink}`,
     lastModified: new Date(post.date),
     changeFrequency: "monthly",
     priority: 0.8,
-  }));
+  }))
 
-  const categories = [...new Set(posts.map((post) => post.category))];
+  const categories = [...new Set(posts.map((post) => post.category))]
   const categoryEntries: MetadataRoute.Sitemap = categories.map((category) => ({
     url: `${siteConfig.url}/${encodeURIComponent(category)}`,
     changeFrequency: "weekly",
     priority: 0.6,
-  }));
+  }))
 
   return [
     {
@@ -52,5 +52,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     ...categoryEntries,
     ...postEntries,
-  ];
+  ]
 }

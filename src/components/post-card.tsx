@@ -1,24 +1,18 @@
-import Link from "next/link";
-import { format } from "date-fns";
-import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { getCategoryHref, type Post } from "@/lib/posts";
+import Link from "next/link"
+import { format } from "date-fns"
+import { Badge } from "@/components/ui/badge"
+import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { getCategoryHref, type Post } from "@/lib/posts"
 
 type PostCardProps = {
-  post: Post;
-};
+  post: Post
+}
 
 export function PostCard({ post }: PostCardProps) {
-  const isDraftPreview =
-    process.env.NODE_ENV === "development" && post.draft;
+  const isDraftPreview = process.env.NODE_ENV === "development" && post.draft
 
   return (
-    <Card className="relative transition-colors hover:bg-muted/40">
+    <Card className="hover:bg-muted/40 relative transition-colors">
       {isDraftPreview ? (
         <Badge
           variant="outline"
@@ -28,7 +22,7 @@ export function PostCard({ post }: PostCardProps) {
         </Badge>
       ) : null}
       <CardHeader>
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+        <div className="text-muted-foreground flex items-center gap-2 text-sm">
           <time dateTime={post.date}>{format(new Date(post.date), "yyyy.MM.dd")}</time>
           <span>·</span>
           <span>{post.readingTime}</span>
@@ -54,5 +48,5 @@ export function PostCard({ post }: PostCardProps) {
         ) : null}
       </CardHeader>
     </Card>
-  );
+  )
 }

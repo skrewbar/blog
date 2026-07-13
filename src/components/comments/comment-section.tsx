@@ -1,90 +1,88 @@
-"use client";
+"use client"
 
-import { useCallback, useEffect, useState } from "react";
-import Image from "next/image";
-import { format } from "date-fns";
-import { CommentForm } from "@/components/comments/comment-form";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import { Skeleton } from "@/components/ui/skeleton";
+import { useCallback, useEffect, useState } from "react"
+import Image from "next/image"
+import { format } from "date-fns"
+import { CommentForm } from "@/components/comments/comment-form"
+import { Button } from "@/components/ui/button"
+import { Separator } from "@/components/ui/separator"
+import { Skeleton } from "@/components/ui/skeleton"
 
 type Comment = {
-  id: string;
-  slug: string;
-  parentId: string | null;
-  authorName: string;
-  gravatarHash: string;
-  body: string;
-  createdAt: string;
-};
+  id: string
+  slug: string
+  parentId: string | null
+  authorName: string
+  gravatarHash: string
+  body: string
+  createdAt: string
+}
 
 type CommentSectionProps = {
-  slug: string;
-};
+  slug: string
+}
 
 async function loadCommentData(slug: string): Promise<Comment[]> {
-  const response = await fetch(`/api/comments?slug=${encodeURIComponent(slug)}`);
-  const data = await response.json();
-  return (data.comments ?? []) as Comment[];
+  const response = await fetch(`/api/comments?slug=${encodeURIComponent(slug)}`)
+  const data = await response.json()
+  return (data.comments ?? []) as Comment[]
 }
 
 export function CommentSection({ slug }: CommentSectionProps) {
-  const [comments, setComments] = useState<Comment[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [replyTo, setReplyTo] = useState<Comment | null>(null);
+  const [comments, setComments] = useState<Comment[]>([])
+  const [loading, setLoading] = useState(true)
+  const [replyTo, setReplyTo] = useState<Comment | null>(null)
 
   useEffect(() => {
-    let cancelled = false;
+    let cancelled = false
 
     void loadCommentData(slug)
       .then((nextComments) => {
         if (!cancelled) {
-          setComments(nextComments);
+          setComments(nextComments)
         }
       })
       .catch(() => {
         if (!cancelled) {
-          setComments([]);
+          setComments([])
         }
       })
       .finally(() => {
         if (!cancelled) {
-          setLoading(false);
+          setLoading(false)
         }
-      });
+      })
 
     return () => {
-      cancelled = true;
-    };
-  }, [slug]);
+      cancelled = true
+    }
+  }, [slug])
 
   const refreshComments = useCallback(async () => {
-    setLoading(true);
+    setLoading(true)
 
     try {
-      setComments(await loadCommentData(slug));
+      setComments(await loadCommentData(slug))
     } catch {
-      setComments([]);
+      setComments([])
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  }, [slug]);
+  }, [slug])
 
-  const topLevel = comments.filter((comment) => !comment.parentId);
+  const topLevel = comments.filter((comment) => !comment.parentId)
   const repliesByParent = comments.reduce<Record<string, Comment[]>>((acc, comment) => {
     if (comment.parentId) {
-      acc[comment.parentId] = [...(acc[comment.parentId] ?? []), comment];
+      acc[comment.parentId] = [...(acc[comment.parentId] ?? []), comment]
     }
-    return acc;
-  }, {});
+    return acc
+  }, {})
 
   return (
     <section className="space-y-6">
       <div>
         <h2 className="text-xl font-semibold">댓글</h2>
-        <p className="text-sm text-muted-foreground">
-          이름과 이메일을 입력해 댓글을 남겨주세요.
-        </p>
+        <p className="text-muted-foreground text-sm">이름과 이메일을 입력해 댓글을 남겨주세요.</p>
       </div>
 
       <CommentForm
@@ -92,8 +90,8 @@ export function CommentSection({ slug }: CommentSectionProps) {
         parentId={replyTo?.id ?? null}
         parentAuthor={replyTo?.authorName}
         onSuccess={() => {
-          setReplyTo(null);
-          void refreshComments();
+          setReplyTo(null)
+          void refreshComments()
         }}
         onCancel={replyTo ? () => setReplyTo(null) : undefined}
       />
@@ -106,15 +104,12 @@ export function CommentSection({ slug }: CommentSectionProps) {
           <Skeleton className="h-20 w-full" />
         </div>
       ) : topLevel.length === 0 ? (
-        <p className="text-sm text-muted-foreground">아직 댓글이 없습니다.</p>
+        <p className="text-muted-foreground text-sm">아직 댓글이 없습니다.</p>
       ) : (
         <ul className="space-y-6">
           {topLevel.map((comment) => (
             <li key={comment.id} className="space-y-4">
-              <CommentItem
-                comment={comment}
-                onReply={() => setReplyTo(comment)}
-              />
+              <CommentItem comment={comment} onReply={() => setReplyTo(comment)} />
               {(repliesByParent[comment.id] ?? []).map((reply) => (
                 <div key={reply.id} className="ml-10 border-l pl-4">
                   <CommentItem comment={reply} />
@@ -125,16 +120,10 @@ export function CommentSection({ slug }: CommentSectionProps) {
         </ul>
       )}
     </section>
-  );
+  )
 }
 
-function CommentItem({
-  comment,
-  onReply,
-}: {
-  comment: Comment;
-  onReply?: () => void;
-}) {
+function CommentItem({ comment, onReply }: { comment: Comment; onReply?: () => void }) {
   return (
     <div className="flex gap-3">
       <Image
@@ -151,7 +140,7 @@ function CommentItem({
             {format(new Date(comment.createdAt), "yyyy.MM.dd HH:mm")}
           </time>
         </div>
-        <p className="whitespace-pre-wrap text-sm">{comment.body}</p>
+        <p className="text-sm whitespace-pre-wrap">{comment.body}</p>
         {onReply ? (
           <Button variant="ghost" size="sm" onClick={onReply}>
             답글
@@ -159,5 +148,5 @@ function CommentItem({
         ) : null}
       </div>
     </div>
-  );
+  )
 }

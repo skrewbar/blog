@@ -1,16 +1,16 @@
-import { Pagination } from "@/components/pagination";
-import { PostCard } from "@/components/post-card";
-import { getPublishedPosts, paginatePosts, parsePageParam } from "@/lib/posts";
-import { siteConfig } from "@/lib/site";
+import { Pagination } from "@/components/pagination"
+import { PostCard } from "@/components/post-card"
+import { getPublishedPosts, paginatePosts, parsePageParam } from "@/lib/posts"
+import { siteConfig } from "@/lib/site"
 
 type HomePageProps = {
-  searchParams: Promise<{ page?: string }>;
-};
+  searchParams: Promise<{ page?: string }>
+}
 
 export default async function HomePage({ searchParams }: HomePageProps) {
-  const params = await searchParams;
-  const posts = getPublishedPosts();
-  const pagination = paginatePosts(posts, parsePageParam(params.page));
+  const params = await searchParams
+  const posts = getPublishedPosts()
+  const pagination = paginatePosts(posts, parsePageParam(params.page))
 
   return (
     <div className="space-y-8">
@@ -25,11 +25,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
         ))}
       </div>
 
-      <Pagination
-        basePath="/"
-        currentPage={pagination.currentPage}
-        totalPages={pagination.totalPages}
-      />
+      <Pagination basePath="/" currentPage={pagination.currentPage} totalPages={pagination.totalPages} />
     </div>
-  );
+  )
 }

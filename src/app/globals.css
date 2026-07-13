@@ -137,7 +137,7 @@
 }
 
 [data-rehype-pretty-code-figure] pre {
-  @apply overflow-x-auto rounded-lg border bg-muted/50 p-4 text-sm;
+  @apply bg-muted/50 overflow-x-auto rounded-lg border p-4 text-sm;
 }
 
 [data-rehype-pretty-code-figure] code {

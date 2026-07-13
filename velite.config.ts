@@ -1,8 +1,8 @@
-import { defineCollection, defineConfig, s } from "velite";
-import rehypeKatex from "rehype-katex";
-import rehypePrettyCode from "rehype-pretty-code";
-import rehypeSlug from "rehype-slug";
-import remarkMath from "remark-math";
+import { defineCollection, defineConfig, s } from "velite"
+import rehypeKatex from "rehype-katex"
+import rehypePrettyCode from "rehype-pretty-code"
+import rehypeSlug from "rehype-slug"
+import remarkMath from "remark-math"
 
 const posts = defineCollection({
   name: "Post",
@@ -27,7 +27,7 @@ const posts = defineCollection({
       readingTime: `${data.metadata.readingTime} min read`,
       wordCount: data.metadata.wordCount,
     })),
-});
+})
 
 export default defineConfig({
   root: "content",
@@ -53,4 +53,4 @@ export default defineConfig({
       ],
     ],
   },
-});
+})

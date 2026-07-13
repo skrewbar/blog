@@ -1,33 +1,30 @@
-"use client";
+"use client"
 
-import { Check, Copy } from "lucide-react";
-import { useState } from "react";
-import { buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { Check, Copy } from "lucide-react"
+import { useState } from "react"
+import { buttonVariants } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
 
 type CodeBlockCopyButtonProps = {
-  containerRef: React.RefObject<HTMLElement | null>;
-  className?: string;
-};
+  containerRef: React.RefObject<HTMLElement | null>
+  className?: string
+}
 
-export function CodeBlockCopyButton({
-  containerRef,
-  className,
-}: CodeBlockCopyButtonProps) {
-  const [copied, setCopied] = useState(false);
+export function CodeBlockCopyButton({ containerRef, className }: CodeBlockCopyButtonProps) {
+  const [copied, setCopied] = useState(false)
 
   async function handleCopy() {
-    const code = containerRef.current?.querySelector("code");
-    const text = code?.textContent ?? "";
+    const code = containerRef.current?.querySelector("code")
+    const text = code?.textContent ?? ""
 
-    if (!text) return;
+    if (!text) return
 
     try {
-      await navigator.clipboard.writeText(text);
-      setCopied(true);
-      window.setTimeout(() => setCopied(false), 2000);
+      await navigator.clipboard.writeText(text)
+      setCopied(true)
+      window.setTimeout(() => setCopied(false), 2000)
     } catch {
-      setCopied(false);
+      setCopied(false)
     }
   }
 
@@ -36,7 +33,7 @@ export function CodeBlockCopyButton({
       type="button"
       className={cn(
         buttonVariants({ variant: "outline", size: "icon-xs" }),
-        "absolute top-2 right-2 z-10 bg-background/90 shadow-sm backdrop-blur-sm",
+        "bg-background/90 absolute top-2 right-2 z-10 shadow-sm backdrop-blur-sm",
         className,
       )}
       onClick={handleCopy}
@@ -44,5 +41,5 @@ export function CodeBlockCopyButton({
     >
       {copied ? <Check /> : <Copy />}
     </button>
-  );
+  )
 }

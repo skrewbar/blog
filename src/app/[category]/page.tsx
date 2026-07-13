@@ -1,7 +1,7 @@
-import type { Metadata } from "next";
-import { notFound } from "next/navigation";
-import { Pagination } from "@/components/pagination";
-import { PostCard } from "@/components/post-card";
+import type { Metadata } from "next"
+import { notFound } from "next/navigation"
+import { Pagination } from "@/components/pagination"
+import { PostCard } from "@/components/post-card"
 import {
   decodeCategoryParam,
   getAllCategories,
@@ -9,8 +9,8 @@ import {
   getPostsByCategory,
   paginatePosts,
   parsePageParam,
-} from "@/lib/posts";
-import { siteConfig } from "@/lib/site";
+} from "@/lib/posts"
+import { siteConfig } from "@/lib/site"
 
 const RESERVED_CATEGORIES = new Set([
   "posts",
@@ -22,52 +22,47 @@ const RESERVED_CATEGORIES = new Set([
   "privacy",
   "rss.xml",
   "_next",
-]);
+])
 
 type CategoryPageProps = {
-  params: Promise<{ category: string }>;
-  searchParams: Promise<{ page?: string }>;
-};
-
-export async function generateStaticParams() {
-  return getAllCategories().map((category) => ({ category }));
+  params: Promise<{ category: string }>
+  searchParams: Promise<{ page?: string }>
 }
 
-export async function generateMetadata({
-  params,
-}: CategoryPageProps): Promise<Metadata> {
-  const { category } = await params;
-  const decodedCategory = decodeCategoryParam(category);
+export async function generateStaticParams() {
+  return getAllCategories().map((category) => ({ category }))
+}
+
+export async function generateMetadata({ params }: CategoryPageProps): Promise<Metadata> {
+  const { category } = await params
+  const decodedCategory = decodeCategoryParam(category)
   return {
     title: `${decodedCategory} 글 목록`,
     description: `${siteConfig.name}의 ${decodedCategory} 카테고리 글 목록`,
-  };
+  }
 }
 
-export default async function CategoryPage({
-  params,
-  searchParams,
-}: CategoryPageProps) {
-  const { category } = await params;
-  const decodedCategory = decodeCategoryParam(category);
+export default async function CategoryPage({ params, searchParams }: CategoryPageProps) {
+  const { category } = await params
+  const decodedCategory = decodeCategoryParam(category)
 
   if (RESERVED_CATEGORIES.has(decodedCategory)) {
-    notFound();
+    notFound()
   }
 
-  const query = await searchParams;
-  const posts = getPostsByCategory(decodedCategory);
+  const query = await searchParams
+  const posts = getPostsByCategory(decodedCategory)
 
   if (!posts.length && !getAllCategories().includes(decodedCategory)) {
-    notFound();
+    notFound()
   }
 
-  const pagination = paginatePosts(posts, parsePageParam(query.page));
+  const pagination = paginatePosts(posts, parsePageParam(query.page))
 
   return (
     <div className="space-y-8">
       <header className="space-y-2">
-        <p className="text-sm text-muted-foreground">Category</p>
+        <p className="text-muted-foreground text-sm">Category</p>
         <h1 className="text-3xl font-bold tracking-tight">{decodedCategory}</h1>
       </header>
 
@@ -85,5 +80,5 @@ export default async function CategoryPage({
         totalPages={pagination.totalPages}
       />
     </div>
-  );
+  )
 }
