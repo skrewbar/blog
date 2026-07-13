@@ -39,7 +39,7 @@ export function ThemeToggle() {
         aria-label="자동"
         aria-pressed={isSystemTheme}
         className={cn(isSystemTheme && "bg-muted text-foreground")}
-        onClick={() => setTheme("system")}
+        onClick={() => setTheme(isSystemTheme ? (resolvedTheme ?? "light") : "system")}
       >
         자동
       </Button>
