@@ -105,7 +105,7 @@ export function PostStats({ slug }: PostStatsProps) {
         disabled={stats.liked || liking}
         className="gap-2"
       >
-        <Heart className={`h-4 w-4 ${stats.liked ? "fill-current" : ""}`} />
+        <Heart className={`h-4 w-4 translate-y-[-0.65px] ${stats.liked ? "fill-current" : ""}`} />
         좋아요 {stats.likeCount.toLocaleString()}
       </Button>
     </div>
