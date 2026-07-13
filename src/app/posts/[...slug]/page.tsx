@@ -78,13 +78,16 @@ export default async function PostPage({ params }: PostPageProps) {
         </div>
         <h1 className="text-4xl font-bold tracking-tight">{post.title}</h1>
         <p className="text-lg text-muted-foreground">{post.description}</p>
-        <div className="flex flex-wrap gap-2">
-          {post.tags.map((tag) => (
-            <Link key={tag} href={`/tags/${encodeURIComponent(tag)}`}>
-              <Badge variant="secondary">{tag}</Badge>
-            </Link>
-          ))}
-        </div>
+        {post.tags.length ? (
+          <div className="flex flex-wrap gap-2">
+            {post.tags.map((tag) => (
+              <Link key={tag} href={`/tags/${encodeURIComponent(tag)}`}>
+                <Badge variant="secondary">{tag}</Badge>
+              </Link>
+            ))}
+          </div>
+        ) : null}
+        <PostStats slug={post.slug} />
         {post.cover ? (
           <div className="relative aspect-[2/1] overflow-hidden rounded-xl border">
             <Image
@@ -97,7 +100,6 @@ export default async function PostPage({ params }: PostPageProps) {
             />
           </div>
         ) : null}
-        <PostStats slug={post.slug} />
       </header>
 
       <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_240px]">
