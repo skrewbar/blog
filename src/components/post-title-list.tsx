@@ -15,8 +15,11 @@ export function PostTitleList({ posts }: PostTitleListProps) {
     <ul className="space-y-2">
       {posts.map((post) => (
         <li key={post.slug}>
-          <Link href={post.permalink} className="group flex items-baseline gap-3 text-sm">
-            <time dateTime={post.date} className="text-muted-foreground shrink-0 tabular-nums">
+          <Link
+            href={post.permalink}
+            className="group grid grid-cols-[10ch_1fr] items-baseline gap-x-3 text-sm"
+          >
+            <time dateTime={post.date} className="text-muted-foreground tabular-nums">
               {format(new Date(post.date), "yyyy.MM.dd")}
             </time>
             <span className="text-foreground/90 group-hover:text-foreground font-medium transition-colors">
