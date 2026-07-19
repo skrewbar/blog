@@ -49,7 +49,7 @@ export default function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable} flex min-h-screen flex-col antialiased`}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem enableColorScheme>
           <SiteHeader />
-          <main className="mx-auto min-h-[calc(100vh-8rem)] w-full max-w-5xl flex-1 px-4 py-10">{children}</main>
+          <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-6">{children}</main>
           <SiteFooter />
         </ThemeProvider>
       </body>
