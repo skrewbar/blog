@@ -1,0 +1,371 @@
+---
+title: "ABC 467"
+description: "AtCoder Beginner Contest 467"
+date: 2026-07-20
+slug: abc467
+category: PS
+tags:
+  - AtCoder
+  - ABC
+---
+
+A번부터 E번까지의 풀이를 정리해 보았습니다.
+
+## [A - Obesity](https://atcoder.jp/contests/abc467/tasks/abc467_a)
+
+입력으로 주어지는 $H$의 단위는 $\mathrm{cm}$임에 주의합시다.
+
+따라서 $W \div (H / 100) \div (H / 100) \geq 25$를 판단해주면 됩니다.
+
+해당 식을 그대로 사용하면 부동 소수점 오차 때문에 하나의 테스트케이스에서 WA를 받습니다.
+
+식을 정리하면 $\dfrac{W \times 100^2}{H^2} \geq 25$ 입니다.
+
+정리한 식을 사용해도 정답을 받을 순 있지만 양변에 $H^2$를 곱해주면 더 안전합니다.
+
+시간 복잡도는 $O(1)$입니다.
+
+<Collapsible title="코드 (Python)">
+
+```python
+import sys
+
+input = lambda: sys.stdin.readline().rstrip()
+
+
+def main():
+    H, W = map(int, input().split())
+
+    if W * 10000 >= 25 * H * H:
+        print("Yes")
+    else:
+        print("No")
+
+
+main()
+```
+
+</Collapsible>
+
+## [B - Keep the Change](https://atcoder.jp/contests/abc467/tasks/abc467_b)
+
+문제에서 요구하는 대로 거스름돈을 받는 경우, 아닌 경우를 모두 계산해주면 됩니다.
+
+시간 복잡도는 $O(N)$입니다.
+
+<Collapsible title="코드 (Python)">
+
+```python
+import sys
+
+input = lambda: sys.stdin.readline().rstrip()
+
+
+def main():
+    N = int(input())
+
+    X = Y = 10000
+
+    for _ in range(N):
+        A, B, S = input().split()
+        A = int(A)
+        B = int(B)
+
+        if S == "keep":
+            X -= B
+        else:
+            X -= A
+        Y -= A
+
+    print(Y - X)
+
+
+main()
+```
+
+</Collapsible>
+
+## [C - Adjacent Sums (easy)](https://atcoder.jp/contests/abc467/tasks/abc467_c)
+
+$A_1 = C$인 답이 존재한다고 칩시다.
+
+그렇다면 $A_1 + A_2 \equiv B_1 \pmod M$이어야 하므로 $A_2$의 값이 $(B_1 - A_1) \bmod M$으로 결정됩니다.
+
+그렇다면 $A_2 + A_3 \equiv B_2 \pmod M$이어야 하므로 $A_3$의 값이 $(B_2 - A_2) \bmod M$으로 결정됩니다.
+
+같은 방식으로 계속한다면 모든 $A_i$의 값이 결정됩니다.
+
+$A_1$이 결정되면 나머지도 결정됩니다. $A_1$으로 가능한 값은 $0$과 $1$뿐이므로 두 가지의 경우에 대해 계산해주면 됩니다.
+
+따라서 시간 복잡도 $O(N)$에 해결할 수 있습니다.
+
+<Collapsible title="코드 (C++)">
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int A[202020], B[202020];
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int N, M;
+    cin >> N >> M;
+
+    for (int i = 1; i <= N; i++) cin >> A[i];
+    for (int i = 1; i <= N - 1; i++) cin >> B[i];
+
+    auto calc = [&]() {
+        int ret = 0;
+
+        bool added = false;
+        for (int i = 1; i <= N - 1; i++) {
+            if ((A[i] + A[i + 1] + added) % 2 != B[i]) {
+                added = true;
+                ret++;
+            } else added = false;
+        }
+
+        return ret;
+    };
+
+    int ans = calc();
+    A[1]++;
+    ans = min(ans, calc() + 1);
+    cout << ans;
+
+    return 0;
+}
+```
+
+</Collapsible>
+
+## [D - Concentric Circles](https://atcoder.jp/contests/abc467/tasks/abc467_d)
+
+원의 정의는 어떤 점(중심)으로부터 떨어진 거리가 같은 점들의 모임입니다.
+
+따라서 $C_1$의 중심과 $P$의 거리는 $C_2$의 중심과 $Q$와의 거리와 같아야 합니다.
+
+$C_1$의 중심을 $(x, y)$라 하면 이를 나타내는 식은
+$\sqrt{(P_x - x)^2 + (P_y - y)^2} = \sqrt{(Q_x - x)^2 + (Q_y - y)^2}$
+입니다.
+
+양변을 제곱하고 전개해서 식을 정리하면
+$2x(Q_x - P_x) + 2y(Q_y - P_y) = Q_x^2 + Q_y^2 - (P_x^2 + P_y^2)$
+입니다.
+
+이는 직선의 방정식이므로 각 원의 중심으로 가능한 점들의 집합이 직선을 이룸을 알 수 있습니다.
+
+따라서 우리는 $C_1$이 나타내는 직선과 $C_2$가 나타내는 직선이 교점을 갖는지만 구하면 됩니다.
+
+- 기울기가 다르다면 항상 교점을 갖습니다.
+- 기울기가 같은 경우
+  - $x = a$꼴의 직선인 경우 $\overline{PQ}$의 중점과 $\overline{RS}$의 중점이 일치하면 교점을 갖습니다.
+  - 그렇지 않다면 $y$절편이 일치하면 교점을 갖습니다.
+
+기울기와 $y$ 절편을 계산할 때 double이나 long double을 사용하면 WA를 받습니다. 따라서 직접 유리수를 구현하거나 Python의 Fraction을 사용해야 합니다.
+
+시간 복잡도는 $O(1)$입니다.
+
+<Collapsible title="코드 (C++)">
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+using ll = long long;
+
+#define x first
+#define y second
+
+struct Fraction {
+    ll numer, denom;
+
+    Fraction(ll _n, ll _d) : numer(_n), denom(_d) {
+        if (denom == 0) {
+            numer = 1;
+            return;
+        }
+
+        if (denom < 0) {
+            numer = -numer;
+            denom = -denom;
+        }
+
+        bool neg = false;
+        if (numer < 0) {
+            neg = true;
+            numer = -numer;
+        }
+
+        ll g = gcd(numer, denom);
+
+        numer /= g;
+        denom /= g;
+
+        if (neg) numer = -numer;
+    }
+
+    bool operator==(const Fraction& f) const {
+        return numer == f.numer and denom == f.denom;
+    }
+};
+
+const Fraction INF(1, 0);
+
+Fraction getGrad(pair<ll, ll> p1, pair<ll, ll> p2) {
+    ll numer = 2 * (p2.x - p1.x);
+    ll denom = 2 * (p2.y - p1.y);
+
+    return {numer, denom};
+}
+
+Fraction getYInter(pair<ll, ll> p1, pair<ll, ll> p2) {
+    ll numer = -p1.x * p1.x - p1.y * p1.y + p2.x * p2.x + p2.y * p2.y;
+    ll denom = 2 * (p2.y - p1.y);
+
+    return {numer, denom};
+}
+
+void solve() {
+    pair<ll, ll> P, Q, R, S;
+    cin >> P.x >> P.y >> Q.x >> Q.y >> R.x >> R.y >> S.x >> S.y;
+
+    if (getGrad(P, Q) == getGrad(R, S)) {
+        if (getGrad(P, Q) == INF) {
+            cout << (P.x + Q.x == R.x + S.x ? "Yes" : "No") << '\n';
+            return;
+        }
+
+        cout << (getYInter(P, Q) == getYInter(R, S) ? "Yes" : "No") << '\n';
+        return;
+    }
+    cout << "Yes\n";
+}
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int t;
+    cin >> t;
+
+    while (t--) solve();
+
+    return 0;
+}
+```
+
+</Collapsible>
+
+## [E - Adjacent Sums (hard)](https://atcoder.jp/contests/abc467/tasks/abc467_e)
+
+조건을 만족하도록 $A$에 연산을 가한 결과를 $A'$라 합시다.
+
+$A'_1$이 결정되면 나머지는 모두 $A'_i \equiv B_{i - 1} - A'_{i - 1}$로 결정됩니다.
+
+이때 $A'_1$의 값이 $1$ 증가한다면 조건을 만족시키기 위해 홀수 번째 $A'_i$는 모두 $1$씩 증가하고, 짝수 번째 $A'_i$는 모두 $1$씩 감소함을 알 수 있습니다.
+
+따라서 $A'_i = A_i$인 경계를 제외하고 생각한다면 $A'_1$을 $1$ 늘릴때 마다 연산 횟수는 $N$이 홀수이면 $1$ 증가하고, 짝수이면 증가하지 않습니다.
+
+여기서 $A'_1$을 증가시키는게 손해라는 관찰을 할 수 있습니다. 다만 $A'_i = A_i$인 경계는 여전히 고려해야 하므로 이러한 경계만 계산하고 나머지는 계산할 필요가 없어보입니다. 그리고 실제로 그렇습니다.
+
+임의의 $A'_1$에 대해 필요한 총 연산 횟수를 $c$라 합시다.
+
+$A'_1$을 $1$ 증가시켜도 여전히 $A'_i \neq A_i$라면 $c$는 $1$ 이하로 증가합니다.
+
+따라서 우리는 $A'_i = A_i$인 $i$가 존재하는 $A'_1$만을 고려해도 됩니다.
+
+$A'$의 길이는 $N$이므로 $A'_1$의 후보도 최대 $N$개 존재합니다.
+
+$s = A'_1$라 하면 $A'_i = B_{i - 1} - B_{i - 2} + B_{i - 3} - \dots + (-1)^{(i + 1)}s$로 나타낼 수 있습니다.
+
+이때 $B_i$의 교대합을 편의상 $C_i$라고 합시다. $C_1 = 0$이라 두고 $C_i = B_{i - 1} - C_{i - 1}$의 점화식으로 얻을 수 있습니다.
+
+그러면 $A'_i \equiv C_i + (-1)^{(i + 1)}s \pmod M$이고, $A'_i$가 $A_i$와 같으려면 $C_i - A_i \equiv (-1)^is \pmod M$여야 합니다.
+
+이러한 후보 $s$를 모두 구한 다음 정렬해서 $s$를 늘리면서 경우의 수를 갱신해주면 됩니다.
+
+먼저 가장 작은 $s$에 대해 연산 횟수 $c$를 구해줍니다. $s$가 $s'$로 증가할 때 $A'_i = A_i$인 경계를 고려하지 않는다면 $N$이 홀수라면 $s' - s$만큼 증가하고, $N$이 짝수라면 그대로입니다. 이제 경계만 고려해주면 됩니다.
+
+$s'$로 증가하고 나서 $A'_i = A_i$가 된 것들 중 $i$가 홀수인 경우는 증가해서 $A_i$가 되었으므로 연산 횟수가 $M$만큼 줄어듭니다.
+
+$s$가 증가하기 전 $A'_i = A_i$였던 것들 중 $i$가 짝수인 경우는 감소해서 $A'_i$보다 작아지게 되므로 연산 횟수가 $M$만큼 늘어납니다.
+
+해당 방식으로 모든 후보에 대해서 연산 횟수의 최솟값을 갱신해주면 답을 구할 수 있습니다.
+
+$s$를 모두 정렬하는 데 $O(N\log N)$이므로 시간 복잡도는 $O(N\log N)$입니다.
+
+<Collapsible title="코드 (C++)">
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+#define all(v) v.begin(), v.end()
+
+using ll = long long;
+
+ll A[202020], B[202020], C[202020];
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    ll N, M;
+    cin >> N >> M;
+
+    for (int i = 1; i <= N; i++) cin >> A[i];
+    for (int i = 1; i <= N - 1; i++) cin >> B[i];
+    for (int i = 2; i <= N; i++) C[i] = B[i - 1] - C[i - 1];
+
+    vector<pair<ll, int>> candidates;
+
+    for (int i = 1; i <= N; i++) {
+        ll s = (C[i] - A[i]) * (i & 1 ? -1 : 1);
+        s = (s % M + M) % M;
+        candidates.emplace_back(s, i);
+    }
+
+    sort(all(candidates));
+
+    ll sum = 0;
+    for (int i = 1; i <= N; i++) {
+        ll cnt = C[i] - A[i] + candidates[0].first * (i & 1 ? 1 : -1);
+        cnt = (cnt % M + M) % M;
+        sum += cnt;
+    }
+
+    ll ans = sum;
+    {
+        int i = 0;
+        while (i < N and candidates[0].first == candidates[i].first) {
+            if (~candidates[i].second & 1) sum += M;
+            i++;
+        }
+        while (i < N) {
+            if (N & 1) sum += candidates[i].first - candidates[i - 1].first;
+
+            int cnt[2] = {};
+
+            cnt[candidates[i].second & 1]++;
+            while (i + 1 < N and candidates[i].first == candidates[i + 1].first)
+                cnt[candidates[++i].second & 1]++;
+
+            sum -= M * cnt[1];
+            ans = min(ans, sum);
+            sum += M * cnt[0];
+
+            i++;
+        }
+    }
+
+    cout << ans;
+
+    return 0;
+}
+```
+
+</Collapsible>
