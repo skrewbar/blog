@@ -1,0 +1,91 @@
+---
+title: Replace and Keep Sorted
+description: Codeforces Round 701 (Div. 2) B
+date: 2026-07-23 02:03
+slug: cf-1485B
+category: PS
+tags:
+  - Codeforces
+  - 누적 합
+  - 수학
+---
+
+요즘 하루에 한 문제씩 ChatGPT 예약 기능을 이용해서 문제를 추천받고 있는데요,
+
+전형적이면서 초보자에게 추천하기 좋은 문제인 것 같아서 포스팅을 작성해 봅니다.
+
+---
+
+## [B - Replace and Keep Sorted](https://codeforces.com/contest/1485/problem/B)
+
+- 난이도: <CfDifficulty rating={1200} />
+
+네번째 조건에 따르면 각 원소 중 정확히 하나만 달라야 하므로 $l_i$번째가 다른 경우, $l_i + 1$번째가 다른 경우, $\dots$, $r_i - 1$번째가 다른 경우, $r_i$번째가 다른 경우를 모두 합하면 됩니다.
+
+문제의 조건에 맞는 $k$-similar 배열을 $a'$라 합시다.
+
+$l_i$번째가 다른 경우 $1 \leq a'_{l_i} < a_{l_i + 1}$이고 $a'_{l_i} \neq a_{l_i}$여야 하므로 $a_{l_i + 1} - 2$가지의 경우가 있습니다.
+
+$r_i$번째가 다른 경우 $a_{r_i - 1} < a'_{r_i} \leq k$이고 $a'_{r_i} \neq a_{r_i}$여야 하므로 $k - a_{r_i - 1} - 1$가지의 경우가 있습니다.
+
+그 사이의 $j$번째가 다른 경우 $a_{j - 1} < a'_j < a_{j + 1}$이고 $a'_j \neq a_j$여야 하므로 $a_{j + 1} - a_{j - 1} - 2$개의 경우가 있습니다.
+
+이 값들을 모두 합하면 쿼리의 답을 구할 수 있습니다.
+
+그러나 시간 복잡도가 $O(nq)$이므로 시간 초과를 받습니다.
+
+이때 $l_i$번째와 $r_i$번째를 제외하고는 $l_i$와 $r_i$의 값에 관계없이 경우의 수가 항상 $a_{j + 1} - a_{j - 1} - 2$로 일정한 것을 알 수 있습니다.
+
+따라서 쿼리가 들어오기 전 미리 전처리하는 방식으로 해결할 수 있습니다.
+
+$S_i = S_{i - 1} + a_{j + 1} - a_{j - 1} - 2$인 배열 $S_i$를 미리 $O(n)$에 만들어둡니다.
+
+그러면 쿼리의 답을 $(a_{l_i + 1} - 2) + (k - a_{r_i - 1} - 1) + S_{r_i} - S_{l_i - 1}$로 나타낼 수 있고, 이는 쿼리마다 $O(1)$에 처리할 수 있습니다.
+
+따라서 시간 복잡도 $O(n + q)$에 문제를 해결할 수 있습니다.
+
+## 코드
+
+$l_i = r_i$인 경우는 예외처리해 줘야 합니다.
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+using ll = long long;
+
+int a[101010], cnt[101010];
+
+int rangeSum(int l, int r) {
+    if (l > r) return 0;
+    return cnt[r] - cnt[l - 1];
+}
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int n, q, k;
+    cin >> n >> q >> k;
+
+    for (int i = 1; i <= n; i++) cin >> a[i];
+    a[n + 1] = k + 1;
+
+    for (int i = 1; i <= n; i++) {
+        cnt[i] = a[i + 1] - a[i - 1] - 2;
+        cnt[i] += cnt[i - 1];
+    }
+
+    while (q--) {
+        int l, r;
+        cin >> l >> r;
+
+        if (l == r) cout << k - 1 << '\n';
+        else
+            cout << (a[l + 1] - 2) + (k - a[r - 1] - 1) + rangeSum(l + 1, r - 1)
+                 << '\n';
+    }
+
+    return 0;
+}
+```
