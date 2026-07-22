@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { format } from "date-fns"
+import { formatUtcDate } from "@/lib/utc-date"
 import type { Post } from "@/lib/posts"
 
 type PostTitleListProps = {
@@ -20,7 +20,7 @@ export function PostTitleList({ posts }: PostTitleListProps) {
             className="group grid grid-cols-[10ch_1fr] items-baseline gap-x-3 text-sm"
           >
             <time dateTime={post.date} className="text-muted-foreground tabular-nums">
-              {format(new Date(post.date), "yyyy.MM.dd")}
+              {formatUtcDate(post.date)}
             </time>
             <span className="text-foreground/90 group-hover:text-foreground font-medium transition-colors">
               {post.title}

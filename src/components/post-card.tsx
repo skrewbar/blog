@@ -1,7 +1,7 @@
 import Link from "next/link"
-import { format } from "date-fns"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { formatUtcDate } from "@/lib/utc-date"
 import { getCategoryHref, type Post } from "@/lib/posts"
 
 type PostCardProps = {
@@ -23,7 +23,7 @@ export function PostCard({ post }: PostCardProps) {
       ) : null}
       <CardHeader>
         <div className="text-muted-foreground flex items-center gap-2 text-sm">
-          <time dateTime={post.date}>{format(new Date(post.date), "yyyy.MM.dd")}</time>
+          <time dateTime={post.date}>{formatUtcDate(post.date)}</time>
           <span>·</span>
           <span>{post.readingTime}</span>
           <span>·</span>

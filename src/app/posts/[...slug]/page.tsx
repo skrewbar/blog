@@ -2,13 +2,13 @@ import type { Metadata } from "next"
 import Image from "next/image"
 import Link from "next/link"
 import { notFound } from "next/navigation"
-import { format } from "date-fns"
 import { CommentSection } from "@/components/comments/comment-section"
 import { MdxContent } from "@/components/mdx-content"
 import { PostStats } from "@/components/post-stats"
 import { TableOfContents } from "@/components/table-of-contents"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
+import { formatUtcDate } from "@/lib/utc-date"
 import { getCategoryHref, getPostBySlug, getPublishedPosts } from "@/lib/posts"
 import { siteConfig } from "@/lib/site"
 
@@ -65,7 +65,7 @@ export default async function PostPage({ params }: PostPageProps) {
       ) : null}
       <header className="space-y-4">
         <div className="text-muted-foreground flex flex-wrap items-center gap-2 text-sm">
-          <time dateTime={post.date}>{format(new Date(post.date), "yyyy.MM.dd")}</time>
+          <time dateTime={post.date}>{formatUtcDate(post.date)}</time>
           <span>·</span>
           <span>{post.readingTime}</span>
           <span>·</span>

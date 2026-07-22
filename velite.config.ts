@@ -1,8 +1,17 @@
-import { defineCollection, defineConfig, s } from "velite"
+import { defineCollection, defineConfig, defineSchema, s } from "velite"
 import rehypeKatex from "rehype-katex"
 import rehypePrettyCode from "rehype-pretty-code"
 import rehypeSlug from "rehype-slug"
 import remarkMath from "remark-math"
+import { parseUtcDate } from "./src/lib/utc-date"
+
+/** Like s.isodate(), but offset-less / date-only values are always UTC (not build-machine local). */
+const utcDate = defineSchema(() =>
+  s
+    .string()
+    .refine((value) => !Number.isNaN(parseUtcDate(value).getTime()), "Invalid date string")
+    .transform((value) => parseUtcDate(value).toISOString()),
+)
 
 const posts = defineCollection({
   name: "Post",
@@ -11,7 +20,7 @@ const posts = defineCollection({
     .object({
       title: s.string().max(200),
       description: s.string().max(500),
-      date: s.isodate(),
+      date: utcDate(),
       slug: s.string(),
       category: s.string(),
       tags: s.array(s.string()).default([]),
