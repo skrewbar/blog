@@ -1,0 +1,345 @@
+---
+title: AtCoder Beginners Selection
+description: ABS
+date: 2026-07-24 03:01
+slug: abs
+category: PS
+tags:
+  - AtCoder
+---
+
+ABS는 무엇부터 시작해야 할지 막막한 사람들을 위해 준비된 초보자용 문제집입니다.
+
+앞쪽은 입출력과 반복문 위주라 가볍게 풀리지만, Otoshidama부터는 조금 더 생각을 요구합니다.
+
+제가 직접 전부 풀어보면서 풀이·증명과 Python 코드를 정리해 두었습니다.
+
+## [Welcome to AtCoder](https://atcoder.jp/contests/abs/tasks/practice_1)
+
+$a + b + c$와 $s$를 반각 공백으로 구분해서 출력하면 됩니다.
+
+<Collapsible title="코드 (Python)">
+
+```python
+a = int(input())
+b, c = map(int, input().split())
+s = input()
+
+print(a + b + c, s)
+```
+
+</Collapsible>
+
+## [Product](https://atcoder.jp/contests/abs/tasks/abc086_a)
+
+짝수는 $2$로 나누어떨어지는 수입니다.
+
+$ab$가 $2$로 나누어떨어지는지 확인해보면 됩니다.
+
+<Collapsible title="코드 (Python)">
+
+```python
+a, b = map(int, input().split())
+
+if a * b % 2 == 0:
+    print("Even")
+else:
+    print("Odd")
+```
+
+</Collapsible>
+
+## [Placing Marbles](https://atcoder.jp/contests/abs/tasks/abc081_a)
+
+어떤 방법으로든 주어진 문자열의 $1$의 개수를 세면 됩니다.
+
+<Collapsible title="코드 (Python)">
+
+```python
+s = input()
+print(s.count("1"))
+```
+
+</Collapsible>
+
+## [Shift only](https://atcoder.jp/contests/abs/tasks/abc081_b)
+
+하나라도 홀수가 존재할 때 까지 전체를 $2$로 나누는 것을 반복하면 됩니다.
+
+이때 $2$로 나누는 횟수는 $\lceil \log_2 A_i \rceil$를 넘길 수 없으므로 시간 복잡도는 $O(N\log\min(A_i))$이 됩니다.
+
+<Collapsible title="코드 (Python)">
+
+```python
+N = int(input())
+A = list(map(int, input().split()))
+
+ans = 0
+while True:
+    has_odd = False
+    for i in range(N):
+        if A[i] % 2 == 1:
+            has_odd = True
+            break
+
+    if has_odd:
+        break
+
+    for i in range(N):
+        A[i] //= 2
+    ans += 1
+
+
+print(ans)
+```
+
+</Collapsible>
+
+## [Coins](https://atcoder.jp/contests/abs/tasks/abc087_b)
+
+동전을 고르는 $(A + 1)(B + 1)(C + 1)$가지 모든 경우에 대해 금액이 $X$엔이 되는지 검사하면 됩니다.
+
+시간 복잡도는 $O(ABC)$입니다.
+
+<Collapsible title="코드 (Python)">
+
+```python
+A = int(input())
+B = int(input())
+C = int(input())
+X = int(input())
+
+ans = 0
+
+for i in range(A + 1):
+    for j in range(B + 1):
+        for k in range(C + 1):
+            if 500 * i + 100 * j + 50 * k == X:
+                ans += 1
+
+
+print(ans)
+```
+
+</Collapsible>
+
+## [Some Sums](https://atcoder.jp/contests/abs/tasks/abc083_b)
+
+어떤 자연수 $n$의 모든 자리의 합은 $1$의 자리 수, $10$의 자리 수, $100$의 자리 수, $\dots$를 모두 합하면 됩니다.
+
+먼저 $1$의 자리 수는 $n$을 $10$으로 나눈 나머지를 취함으로써 알 수 있습니다.
+
+$10$의 자리 수는 $n$을 $10$으로 나눈 몫에서 $10$으로 나눈 나머지를 취함으로써 알 수 있습니다.
+
+$100$의 자리 수는 $n$을 $100$으로 나눈 몫에서 $10$으로 나눈 나머지를 취함으로써 알 수 있습니다.
+
+이를 계속 반복해서 모두 더해주고, $A$랑 $B$ 사이인 것만 답에 더해주면 됩니다.
+
+자릿수를 모두 더하는 데 각각 $O(\log n)$이 걸리므로 총 시간 복잡도는 $O(N\log N)$입니다.
+
+<Collapsible title="코드 (Python)">
+
+```python
+N, A, B = map(int, input().split())
+
+
+def digit_sum(n):
+    ret = 0
+    while n:
+        ret += n % 10
+        n //= 10
+
+    return ret
+
+
+ans = 0
+for i in range(1, N + 1):
+    if A <= digit_sum(i) <= B:
+        ans += i
+
+print(ans)
+```
+
+</Collapsible>
+
+## [Card Game for Two](https://atcoder.jp/contests/abs/tasks/abc088_b)
+
+두 사람이 번갈아가면서 카드를 가져갈 때, 남아있는 카드 중 수가 가장 큰 카드를 가져가는게 이득입니다.
+
+<Collapsible title="증명">
+
+이는 수학적 귀납법으로 증명할 수 있습니다.
+
+$N \leq 2$에 대해서는 자명하게 참입니다.
+
+$N = k$에 대해 가정이 성립한다고 합시다. $N = k + 1$에 대해 살펴봅시다.
+
+선공이 고른 카드에 적힌 수를 $a_i$, 카드 중 가장 큰 수를 $a_j$라 합시다.
+
+$i = j$인 경우 Alice의 점수를 $A$, $i \neq j$인 경우 $A'$라 합시다.
+
+$N = k$에 대해 가정이 성립하므로 Alice가 무엇을 고르든 Bob은 가장 큰 수를 고르게 될 것 입니다.
+
+따라서 $A' = A - a_j + a_i$가 됩니다.
+
+그런데 $a_j \geq a_i$이므로 $A' \leq A$이고 따라서 카드 중 가장 큰 수를 고르는 것이 항상 이득입니다.
+
+</Collapsible>
+
+따라서 $a$를 내림차순으로 정렬한 다음 번갈아가서 고르면 답을 계산할 수 있습니다.
+
+정렬하는 데 $O(N\log N)$이 걸리므로 총 시간 복잡도는 $O(N\log N)$입니다.
+
+<Collapsible title="코드 (Python)">
+
+```python
+N = int(input())
+a = sorted(map(int, input().split()), reverse=True)
+
+score = [0, 0]
+
+for i in range(N):
+    score[i % 2] += a[i]
+
+print(score[0] - score[1])
+```
+
+</Collapsible>
+
+## [Kagami Mochi](https://atcoder.jp/contests/abs/tasks/abc085_b)
+
+문제의 조건에 따라 직경이 같은 임의의 두 모찌는 어떻게 하더라도 같이 쌓을 수 없습니다.
+
+따라서 직경이 같은 두 모찌는 하나로 생각하면, 문제에서 주어지는 모찌의 직경이 모두 다른 것으로 생각할 수 있습니다.
+
+모찌의 직경이 전부 다르다면 내림차순으로 정렬해서 쌓으면 되므로 문제의 답은 서로 다른 $d_i$의 값의 개수가 됩니다.
+
+적절한 방식으로 중복을 제거하면 시간 복잡도 $O(N)$에 해결할 수 있습니다.
+
+<Collapsible title="코드 (Python)">
+
+```python
+N = int(input())
+
+d = set(int(input()) for _ in range(N))
+
+print(len(d))
+```
+
+</Collapsible>
+
+## [Otoshidama](https://atcoder.jp/contests/abs/tasks/abc085_c)
+
+지폐의 개수 합이 $N$ 이하인 모든 경우에 대해 하나라도 $Y$엔인 경우가 있는지 살펴보면 됩니다.
+
+세 종류의 지폐마다 모든 경우의 수를 살펴보면 시간 복잡도가 $O(N^3)$이 됩니다.
+
+하지만 만엔짜리와 오천엔짜리의 개수가 정해지면 나머지 천엔짜리 지폐의 개수는 정해지므로 시간 복잡도를 $O(N^2)$로 낮출 수 있습니다.
+
+<Collapsible title="코드 (Python)">
+
+```python
+N, Y = map(int, input().split())
+
+
+def find_answer():
+    for i in range(N + 1):
+        for j in range(N - i + 1):
+            remain = Y - 10000 * i - 5000 * j
+            k = remain // 1000
+            if remain % 1000 == 0 and i + j + k == N:
+                return (i, j, k)
+
+    return (-1, -1, -1)
+
+
+print(*find_answer())
+```
+
+</Collapsible>
+
+## [Daydream](https://atcoder.jp/contests/abs/tasks/arc065_a)
+
+자세히 관찰하면 경우의 수가 적어 그리디하게 해결할 수 있습니다.
+
+이 문제에서는 각 단어의 끝이나 시작에 `er`이 올 수 있습니다.
+
+아무 단어의 시작에 있는 `er`을 제거해서 다른 단어가 될 수 없으므로 $T$는 오직 한 가지 방법으로만 구성할 수 있습니다.
+
+먼저 `dream`과 `erase`만으로 $T$를 구성해보고, 만약 도중에 막히면 끝에 `r` 혹은 `er`을 붙여서 `dreamer` 혹은 `eraser`인 경우를 고려해 줍니다.
+
+그런 경우에도 다음이 `dream`이나 `erase`로 시작하지 않는다면 $T$는 주어진 단어만으로 구성할 수 없습니다.
+
+<Collapsible title="코드 (Python)">
+
+```python
+S = input()
+N = len(S)
+
+words = {"dream", "erase"}
+
+
+def is_possible():
+    i = 0
+    while i < N:
+        found = False
+        while S[i : i + 5] in words:
+            i += 5
+            found = True
+        if i >= N:
+            break
+
+        if found and S[i] == "r":
+            i += 1
+        elif found and S[i : i + 2] == "er":
+            i += 2
+
+        if not found:
+            return False
+
+    return True
+
+
+print("YES" if is_possible() else "NO")
+```
+
+</Collapsible>
+
+## [Traveling](https://atcoder.jp/contests/abs/tasks/arc089_a)
+
+어떤 점 $(a, b)$에서 $(c, d)$로 이동하는 데에는 최소 $|c - a| + |d - b|$의 시간이 걸립니다.
+
+거기에 움직일 때 마다 $t$의 홀짝성(2로 나눈 나머지)과 $x + y$의 홀짝성이 같이 바뀝니다.
+
+따라서 시각 $t_i$에 $(x_i, y_i)$에 위치하기 위해서는 $|c - a| + |d - b| \leq t_i - t_{i - 1}$와 $(x + y) \equiv t_i \pmod 2$를 만족해야 합니다.
+
+시간 복잡도 $O(N)$에 해결할 수 있습니다.
+
+<Collapsible title="코드 (Python)">
+
+```python
+def main():
+    N = int(input())
+
+    p_t = 0
+    pos = (0, 0)
+
+    for _ in range(N):
+        t, x, y = map(int, input().split())
+
+        dist = abs(x - pos[0]) + abs(y - pos[1])
+
+        if dist > t - p_t or dist % 2 != (t - p_t) % 2:
+            print("No")
+            return
+
+        p_t = t
+        pos = (x, y)
+
+    print("Yes")
+
+
+main()
+```
+
+</Collapsible>
