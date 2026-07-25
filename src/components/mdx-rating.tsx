@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils"
 
-type DifficultyProps = {
+type RatingProps = {
   /** 문제/유저 레이팅 */
   rating: number
   /** 표시할 텍스트. 생략 시 rating 숫자를 그대로 표시 */
@@ -43,7 +43,7 @@ function resolveColor(stops: ColorStop[], rating: number): string {
   return stops[stops.length - 1]!.color
 }
 
-function DifficultySpan({
+function RatingSpan({
   color,
   className,
   children,
@@ -66,10 +66,10 @@ function DifficultySpan({
  * Codeforces 레이팅/난이도 색상.
  *
  * @example
- * <CfDifficulty rating={1600} />
- * <CfDifficulty rating={3000}>tourist</CfDifficulty>
+ * <CfRating rating={1600} />
+ * <CfRating rating={3000}>tourist</CfRating>
  */
-export function CfDifficulty({ rating, children, className }: DifficultyProps) {
+export function CfRating({ rating, children, className }: RatingProps) {
   const text = children ?? String(rating)
   const color = resolveColor(CF_COLORS, rating)
 
@@ -84,9 +84,9 @@ export function CfDifficulty({ rating, children, className }: DifficultyProps) {
   }
 
   return (
-    <DifficultySpan color={color} className={className}>
+    <RatingSpan color={color} className={className}>
       {text}
-    </DifficultySpan>
+    </RatingSpan>
   )
 }
 
@@ -94,10 +94,10 @@ export function CfDifficulty({ rating, children, className }: DifficultyProps) {
  * AtCoder 레이팅/난이도 색상.
  *
  * @example
- * <AtDifficulty rating={800} />
- * <AtDifficulty rating={1200}>水色</AtDifficulty>
+ * <AtRating rating={800} />
+ * <AtRating rating={1200}>水色</AtRating>
  */
-export function AtDifficulty({ rating, children, className }: DifficultyProps) {
+export function AtRating({ rating, children, className }: RatingProps) {
   const text = children ?? String(rating)
   const color = resolveColor(AT_COLORS, rating)
 
@@ -112,8 +112,8 @@ export function AtDifficulty({ rating, children, className }: DifficultyProps) {
   }
 
   return (
-    <DifficultySpan color={color} className={className}>
+    <RatingSpan color={color} className={className}>
       {text}
-    </DifficultySpan>
+    </RatingSpan>
   )
 }

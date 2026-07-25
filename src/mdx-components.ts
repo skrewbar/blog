@@ -1,12 +1,12 @@
-import { AtDifficulty, CfDifficulty } from "@/components/mdx-difficulty"
+import { AtRating, CfRating } from "@/components/mdx-rating"
 import { Collapsible } from "@/components/mdx-collapsible"
 import { MdxFigure } from "@/components/mdx-figure"
 
 export const mdxComponents = {
   figure: MdxFigure,
   Collapsible,
-  CfDifficulty,
-  AtDifficulty,
+  CfRating,
+  AtRating,
 } satisfies Record<string, React.ElementType>
 
 declare global {
