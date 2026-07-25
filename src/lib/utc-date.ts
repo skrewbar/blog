@@ -1,5 +1,4 @@
-const UTC_DATE_RE =
-  /^(\d{4})-(\d{2})-(\d{2})(?:[T ](\d{2})(?::(\d{2})(?::(\d{2})(?:\.(\d{1,3}))?)?)?)?$/
+const UTC_DATE_RE = /^(\d{4})-(\d{2})-(\d{2})(?:[T ](\d{2})(?::(\d{2})(?::(\d{2})(?:\.(\d{1,3}))?)?)?)?$/
 
 /** Parse a date string as UTC when no timezone is given (including date-only). */
 export function parseUtcDate(value: string): Date {

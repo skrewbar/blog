@@ -43,20 +43,9 @@ function resolveColor(stops: ColorStop[], rating: number): string {
   return stops[stops.length - 1]!.color
 }
 
-function RatingSpan({
-  color,
-  className,
-  children,
-}: {
-  color: string
-  className?: string
-  children: React.ReactNode
-}) {
+function RatingSpan({ color, className, children }: { color: string; className?: string; children: React.ReactNode }) {
   return (
-    <span
-      className={cn("font-semibold not-prose", className)}
-      style={{ color }}
-    >
+    <span className={cn("not-prose font-semibold", className)} style={{ color }}>
       {children}
     </span>
   )
@@ -76,7 +65,7 @@ export function CfRating({ rating, children, className }: RatingProps) {
   // Legendary Grandmaster: 첫 글자 검정(다크모드에선 흰), 나머지 빨강
   if (rating >= 3000 && typeof text === "string" && text.length > 0) {
     return (
-      <span className={cn("font-semibold not-prose", className)}>
+      <span className={cn("not-prose font-semibold", className)}>
         <span className="text-black dark:text-white">{text[0]}</span>
         <span style={{ color: "#FF0000" }}>{text.slice(1)}</span>
       </span>
@@ -104,7 +93,7 @@ export function AtRating({ rating, children, className }: RatingProps) {
   // 금(≥3600)·적(≥2800): 첫 글자 검정(다크모드에선 흰), 나머지 해당 색
   if (rating >= 2800 && typeof text === "string" && text.length > 0) {
     return (
-      <span className={cn("font-semibold not-prose", className)}>
+      <span className={cn("not-prose font-semibold", className)}>
         <span className="text-black dark:text-white">{text[0]}</span>
         <span style={{ color }}>{text.slice(1)}</span>
       </span>
