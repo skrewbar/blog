@@ -1,0 +1,123 @@
+---
+title: Eat the Chip
+description: Codeforces Round 920 (Div. 3) E
+date: 2026-07-25 10:10
+slug: cf-1921e
+category: PS
+tags:
+  - Codeforces
+  - 게임 이론
+  - 그리디 알고리즘
+---
+
+## 문제
+
+- 링크: [E. Eat the Chip](https://codeforces.com/problemset/problem/1921/E)
+- 난이도: <CfRating rating={1600} />
+
+조금의 관찰로 쉽게 해결할 수 있는 재미있고 간단한 게임 이론 문제입니다.
+
+## 풀이
+
+$w = 1$이고 $x_a < x_b$인 경우를 생각해 봅시다.
+
+$x_b - x_a$가 홀수이면 Alice가, 짝수이면 Bob이 승리합니다.
+
+해당 차가 짝수인 경우만 먼저 생각해 봅시다. 그러한 경우 $h$, $w$와 관계없이 Bob은 승리할 수 없습니다.
+
+마찬가지로 홀수인 경우는 Alice가 승리할 수 없습니다.
+
+따라서 이 게임은 잡으려고 하는 쪽과 도망치려고 하는 쪽으로 전략을 나눠서 분석해야 합니다.
+
+편의상 선공인 Alice가 잡으려고 하는 쪽이라 가정해 봅시다.
+
+만약 $|y_b - y_a| \leq 1$인 경우 Bob이 어느 방향으로 도망치든 Alice가 해당 방향으로 따라가면 항상 $y$ 좌표의 차가 $1$이하로 유지되기 때문에
+Alice가 항상 승리합니다.
+
+그 외의 경우 Bob이 계속 도망치다가 벽에 막혀서 붙잡히는 상황을 상상해 볼 수 있습니다.
+
+만약 Bob이 Alice와 $y$ 좌표가 가까워지는 방향으로 이동할 경우 $|y_b - y_a|$가 작아지므로 손해입니다.
+
+따라서 Bob은 항상 Alice와 멀어지는 쪽으로 도망쳐야 합니다.
+
+Bob이 왼쪽 혹은 오른쪽 끝에 도달하여 더 이상 도망칠 수 없고 아직 Alice가 Bob보다 위에 있다면 Alice와 Bob의 $x$좌표 차 $dx$와 $y$좌표 차 $dy$에 대해 $dy \leq (dx + 1) / 2$를 만족한다면 Alice가 Bob을 따라잡고 승리할 수 있습니다.
+
+이외의 경우는 항상 무승부입니다.
+
+이제 Bob이 잡으려고 하는 쪽이라 가정해 봅시다. 이때는 Alice가 한 번 행동하고 나서 판을 180도 뒤집으면 Alice와 Bob을 바꿔서 생각해 볼 수 있습니다.
+
+Alice는 Bob과 멀어지는 쪽으로 도망칠 것이므로 이에 맞게 Alice를 한 번 이동시킨 후 위의 풀이를 똑같이 적용하면 문제를 해결할 수 있습니다.
+
+테스트케이스마다 $O(1)$에 문제를 해결하므로 총 시간 복잡도는 $O(t)$입니다.
+
+## 코드
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+#define x first
+#define y second
+
+void solve() {
+    int h, w;
+    pair<int, int> a, b;
+
+    cin >> h >> w >> a.x >> a.y >> b.x >> b.y;
+
+    if (a.x >= b.x) {
+        cout << "Draw\n";
+        return;
+    }
+
+    bool swapped = false;
+    if (abs(b.x - a.x) % 2 == 0) {
+        swapped = true;
+
+        a.x = h - a.x + 1;
+        a.y = w - a.y + 1;
+
+        b.x = h - b.x + 1;
+        b.y = w - b.y + 1;
+
+        swap(a, b);
+
+        b.x--;
+        if (b.y > a.y and b.y < w) b.y++;
+        else if (b.y < a.y and b.y > 1) b.y--;
+    }
+
+    if (abs(b.y - a.y) <= 1) {
+        cout << (swapped ? "Bob" : "Alice") << '\n';
+        return;
+    }
+
+    int dodge = (b.y > a.y ? w - b.y : b.y - 1);
+    a.x += dodge;
+    b.x -= dodge;
+
+    if (a.x >= h or b.x <= 1) {
+        cout << "Draw\n";
+        return;
+    }
+
+    if (abs(b.y - a.y) <= (b.x - a.x + 1) / 2) {
+        cout << (swapped ? "Bob" : "Alice") << '\n';
+        return;
+    }
+
+    cout << "Draw\n";
+}
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int t;
+    cin >> t;
+
+    while (t--) solve();
+
+    return 0;
+}
+```
