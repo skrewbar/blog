@@ -108,7 +108,7 @@ export default async function PostPage({ params }: PostPageProps) {
         </aside>
       </div>
 
-      <Separator />
+      <Separator className="data-horizontal:h-[2px]" />
 
       <CommentSection key={post.slug} slug={post.slug} />
     </article>
