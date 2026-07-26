@@ -14,14 +14,15 @@ export function PostTitleList({ posts }: PostTitleListProps) {
   return (
     <ul className="space-y-2">
       {posts.map((post) => (
-        <li key={post.slug}>
-          <Link href={post.permalink} className="group grid grid-cols-[10ch_1fr] items-baseline gap-x-3 text-sm">
-            <time dateTime={post.date} className="text-muted-foreground tabular-nums">
-              {formatUtcDate(post.date)}
-            </time>
-            <span className="text-foreground/90 group-hover:text-foreground font-medium transition-colors">
-              {post.title}
-            </span>
+        <li key={post.slug} className="grid grid-cols-[10ch_1fr] items-baseline gap-x-3 text-sm">
+          <time dateTime={post.date} className="text-muted-foreground tabular-nums">
+            {formatUtcDate(post.date)}
+          </time>
+          <Link
+            href={post.permalink}
+            className="text-foreground/90 hover:text-foreground justify-self-start font-medium hover:underline transition-colors"
+          >
+            {post.title}
           </Link>
         </li>
       ))}
