@@ -131,6 +131,8 @@ export async function POST(request: Request) {
         .select("id, parent_id, author_name, author_email, notify, unsubscribe_token")
         .eq("id", parentId)
         .eq("slug", slug)
+        .eq("is_spam", false)
+        .eq("is_hidden", false)
         .maybeSingle()
 
       if (parentError) {
@@ -139,10 +141,6 @@ export async function POST(request: Request) {
 
       if (!data) {
         return NextResponse.json({ error: "Parent comment not found" }, { status: 404 })
-      }
-
-      if (data.parent_id) {
-        return NextResponse.json({ error: "Replies are limited to one level" }, { status: 400 })
       }
 
       parentComment = data

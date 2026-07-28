@@ -134,7 +134,7 @@ export function CommentForm({ slug, parentId = null, parentAuthor, onSuccess, on
 
       <div className="flex gap-2">
         <Button type="submit" disabled={submitting}>
-          {submitting ? "등록 중..." : "댓글 등록"}
+          {submitting ? "등록 중..." : parentId ? "답글 등록" : "댓글 등록"}
         </Button>
         {onCancel ? (
           <Button type="button" variant="outline" onClick={onCancel}>

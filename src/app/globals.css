@@ -277,3 +277,24 @@
 .prose :is(h2, h3, h4, h5, h6) {
   scroll-margin-top: 5rem;
 }
+
+/* Comment target highlight — reuses --selection (brand-derived) */
+@keyframes comment-highlight-fade {
+  from {
+    background-color: var(--selection);
+  }
+  to {
+    background-color: transparent;
+  }
+}
+
+.comment-highlight {
+  animation: comment-highlight-fade 2s ease-out forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .comment-highlight {
+    animation: none;
+    background-color: var(--selection);
+  }
+}
