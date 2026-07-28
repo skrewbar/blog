@@ -133,7 +133,11 @@ export function CommentForm({ slug, parentId = null, parentAuthor, onSuccess, on
       {error ? <p className="text-destructive text-sm">{error}</p> : null}
 
       <div className="flex gap-2">
-        <Button type="submit" disabled={submitting}>
+        <Button
+          type="submit"
+          disabled={submitting}
+          className="border-brand-border bg-brand-wash text-brand-chip-foreground hover:bg-brand-chip hover:text-brand-chip-foreground"
+        >
           {submitting ? "등록 중..." : parentId ? "답글 등록" : "댓글 등록"}
         </Button>
         {onCancel ? (

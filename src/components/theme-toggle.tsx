@@ -58,7 +58,12 @@ export function ThemeToggle() {
         size="sm"
         aria-label="자동"
         aria-pressed={isSystemTheme}
-        className={cn(isSystemTheme && "bg-muted text-foreground")}
+        className={cn(
+          "hover:text-brand-chip-foreground",
+          isSystemTheme
+            ? "bg-brand-subtle text-brand-chip-foreground hover:bg-brand-chip dark:bg-brand-wash dark:hover:bg-brand-subtle"
+            : "hover:bg-brand-subtle dark:hover:bg-brand-wash",
+        )}
         onClick={() => setTheme(isSystemTheme ? (resolvedTheme ?? "light") : "system")}
       >
         자동
@@ -68,7 +73,12 @@ export function ThemeToggle() {
         size="icon"
         aria-label="테마 전환"
         aria-pressed={!isSystemTheme}
-        className="relative"
+        className={cn(
+          "relative hover:text-brand-chip-foreground",
+          !isSystemTheme
+            ? "bg-brand-subtle text-brand-chip-foreground hover:bg-brand-chip dark:bg-brand-wash dark:hover:bg-brand-subtle"
+            : "hover:bg-brand-subtle dark:hover:bg-brand-wash",
+        )}
         onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
       >
         <Sun

@@ -78,23 +78,24 @@
 }
 
 :root {
-  --background: oklch(1 0 0);
+  /* experiment: light pink / dark blue — revert if rejected */
+  --background: oklch(0.992 0.003 19.5);
   --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
+  --card: oklch(0.997 0.002 19.5);
   --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
+  --popover: oklch(0.997 0.002 19.5);
   --popover-foreground: oklch(0.145 0 0);
   --primary: oklch(0.205 0 0);
   --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
+  --secondary: oklch(0.97 0.005 19.5);
   --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
+  --muted: oklch(0.97 0.005 19.5);
   --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
+  --accent: oklch(0.97 0.005 19.5);
   --accent-foreground: oklch(0.205 0 0);
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
+  --border: oklch(0.922 0.006 19.5);
+  --input: oklch(0.922 0.006 19.5);
   /* brand-500 rather than brand-400: a focus ring needs 3:1 against its
      background, and brand-400 only reaches 2.79:1 on white. */
   --ring: var(--brand-300);
@@ -130,60 +131,69 @@
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
   --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
+  --sidebar: oklch(0.992 0.003 19.5);
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: oklch(0.205 0 0);
   --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent: oklch(0.97 0.005 19.5);
   --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-border: oklch(0.922 0.006 19.5);
   --sidebar-ring: var(--brand-500);
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
+  /* experiment: cool blue brand (hue 250) — pink ramp overridden so utilities
+     like text-brand-300 / brand-500 stay blue in dark.
+     Surfaces stay dark; blue chroma is kept light-like (soft wash, not vivid). */
+  --background: oklch(0.145 0.004 250);
   --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
+  --card: oklch(0.185 0.005 250);
   --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
+  --popover: oklch(0.185 0.005 250);
   --popover-foreground: oklch(0.985 0 0);
   --primary: oklch(0.922 0 0);
   --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
+  --secondary: oklch(0.245 0.008 250);
   --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
+  --muted: oklch(0.245 0.008 250);
   --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
+  --accent: oklch(0.245 0.008 250);
   --accent-foreground: oklch(0.985 0 0);
   --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
+  --border: oklch(0.92 0.012 250 / 12%);
+  --input: oklch(0.92 0.014 250 / 16%);
   --ring: var(--brand-400);
-  /* Dark mode reuses the ramp above rather than redefining it — only which rung
-     each role points at changes. --brand is the anchor itself, #f5a3a3.
-     The four surfaces are hand-set below the ramp chroma: a hover background at
-     0.098 reads as a coloured panel instead of a hint. */
+  /* Blue ramp — same lightness/chroma steps as light pink, hue 250. */
+  --brand-50: oklch(0.97 0.014 250);
+  --brand-100: oklch(0.94 0.03 250);
+  --brand-200: oklch(0.895 0.054 250);
+  --brand-300: oklch(0.796 0.098 250);
+  --brand-400: oklch(0.7 0.098 250);
+  --brand-500: oklch(0.62 0.098 250);
+  --brand-600: oklch(0.55 0.098 250);
+  --brand-700: oklch(0.48 0.098 250);
+  --brand-800: oklch(0.4 0.098 250);
+  --brand-900: oklch(0.32 0.098 250);
   --brand: var(--brand-300);
-  --brand-foreground: oklch(0.22 0.05 19.5);
-  --brand-wash: oklch(0.225 0.015 19.5);
-  --brand-subtle: oklch(0.27 0.035 19.5);
-  --brand-chip: oklch(0.30 0.042 19.5);
-  /* Pale counterpart to brand-900 — denser than link hover (brand-300) on dark. */
+  --brand-foreground: oklch(0.22 0.05 250);
+  --brand-wash: oklch(0.205 0.008 250);
+  --brand-subtle: oklch(0.245 0.016 250);
+  --brand-chip: oklch(0.28 0.022 250);
   --brand-chip-foreground: var(--brand-200);
-  --brand-border: oklch(0.4 0.07 19.5);
-  --selection: oklch(0.38 0.06 19.5);
+  --brand-border: oklch(0.4 0.05 250);
+  --selection: oklch(0.38 0.04 250);
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
+  --sidebar: oklch(0.185 0.005 250);
   --sidebar-foreground: oklch(0.985 0 0);
   --sidebar-primary: var(--brand-300);
-  --sidebar-primary-foreground: oklch(0.22 0.05 19.5);
-  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-primary-foreground: oklch(0.22 0.05 250);
+  --sidebar-accent: oklch(0.245 0.008 250);
   --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-border: oklch(0.92 0.012 250 / 12%);
   --sidebar-ring: var(--brand-400);
 }
 
