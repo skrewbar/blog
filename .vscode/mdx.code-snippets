@@ -8,7 +8,7 @@
       "description: ${2:설명}",
       "date: ${CURRENT_YEAR}-${CURRENT_MONTH}-${CURRENT_DATE} ${CURRENT_HOUR}:${CURRENT_MINUTE}",
       "slug: ${3:slug}",
-      "category: ${4:카테고리",
+      "category: ${4:카테고리}",
       "tags:",
       "  - ${5:태그}",
       "---",
