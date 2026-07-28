@@ -33,7 +33,7 @@ export function CodeBlockCopyButton({ containerRef, className }: CodeBlockCopyBu
       type="button"
       className={cn(
         buttonVariants({ variant: "outline", size: "icon-xs" }),
-        "bg-background/90 absolute top-2 right-2 z-10 shadow-sm backdrop-blur-sm",
+        "bg-background/90 absolute top-2 right-2 z-10 shadow-sm backdrop-blur-sm hover:border-brand-border hover:bg-brand-subtle hover:text-brand-chip-foreground dark:hover:border-brand-border dark:hover:bg-brand-subtle dark:hover:text-brand-chip-foreground",
         className,
       )}
       onClick={handleCopy}

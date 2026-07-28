@@ -24,7 +24,7 @@ export default function TagsPage() {
             <li key={tag}>
               <Link
                 href={`/tags/${encodeURIComponent(tag)}`}
-                className="hover:bg-muted inline-flex rounded-full border px-3 py-1 text-sm transition-colors"
+                className="hover:bg-brand-chip hover:border-brand-border hover:text-brand-chip-foreground inline-flex rounded-full border px-3 py-1 text-sm transition-colors"
               >
                 {tag}
               </Link>

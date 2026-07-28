@@ -32,7 +32,7 @@ export function TableOfContents({ toc }: TableOfContentsProps) {
       <ul className="text-muted-foreground space-y-2 text-sm">
         {items.map((item) => (
           <li key={item.url} style={{ paddingLeft: `${(item.depth - 2) * 12}px` }}>
-            <a href={item.url} className="hover:text-foreground">
+            <a href={item.url} className="hover:text-brand transition-colors">
               {item.title}
             </a>
           </li>

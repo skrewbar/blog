@@ -35,7 +35,7 @@ export default async function TagPage({ params }: TagPageProps) {
     <div className="space-y-8">
       <header className="space-y-2">
         <p className="text-muted-foreground text-sm">
-          <Link href="/tags" className="hover:text-foreground">
+          <Link href="/tags" className="hover:text-brand transition-colors">
             Tags
           </Link>
           {" / "}

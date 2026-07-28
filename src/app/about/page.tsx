@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   return (
-    <article className="prose prose-neutral dark:prose-invert max-w-none">
+    <article className="prose prose-neutral dark:prose-invert prose-a:transition-colors prose-a:hover:text-brand max-w-none">
       <h1>소개</h1>
       <p>안녕하세요, {siteConfig.author}입니다.</p>
       <p>궁금한 점이 있으시면 댓글로 남겨 주세요!</p>

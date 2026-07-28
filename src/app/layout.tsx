@@ -54,7 +54,13 @@ export default function RootLayout({
       className={`${pretendard.variable} ${jetbrainsMono.variable}`}
     >
       <body className="flex min-h-screen flex-col font-sans antialiased">
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem enableColorScheme>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          enableColorScheme
+          disableTransitionOnChange
+        >
           <SiteHeader />
           <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-6">{children}</main>
           <SiteFooter />

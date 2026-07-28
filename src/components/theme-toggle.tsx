@@ -2,7 +2,7 @@
 
 import { Moon, Sun } from "lucide-react"
 import { useTheme } from "next-themes"
-import { useSyncExternalStore } from "react"
+import { useEffect, useRef, useState, useSyncExternalStore } from "react"
 import { Button, buttonVariants } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
@@ -17,6 +17,26 @@ function useIsMounted() {
 export function ThemeToggle() {
   const { theme, resolvedTheme, setTheme } = useTheme()
   const mounted = useIsMounted()
+  const [iconDark, setIconDark] = useState(false)
+  const isFirstSync = useRef(true)
+
+  useEffect(() => {
+    if (!mounted || resolvedTheme == null) return
+
+    const next = resolvedTheme === "dark"
+
+    // Initial sync: match the resolved theme without animating from a default.
+    if (isFirstSync.current) {
+      isFirstSync.current = false
+      setIconDark(next)
+      return
+    }
+
+    // defer past next-themes' disableTransitionOnChange window so the page
+    // color swap stays instant while the icons still crossfade (MOTION.md).
+    const id = window.setTimeout(() => setIconDark(next), 20)
+    return () => window.clearTimeout(id)
+  }, [mounted, resolvedTheme])
 
   if (!mounted) {
     return (
@@ -48,10 +68,23 @@ export function ThemeToggle() {
         size="icon"
         aria-label="테마 전환"
         aria-pressed={!isSystemTheme}
+        className="relative"
         onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
       >
-        <Sun className="h-4 w-4 scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
-        <Moon className="absolute h-4 w-4 scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
+        <Sun
+          aria-hidden
+          className={cn(
+            "h-4 w-4 transition-transform duration-150 ease-in-out",
+            iconDark ? "scale-0 -rotate-90" : "scale-100 rotate-0",
+          )}
+        />
+        <Moon
+          aria-hidden
+          className={cn(
+            "absolute h-4 w-4 transition-transform duration-150 ease-in-out",
+            iconDark ? "scale-100 rotate-0" : "scale-0 rotate-90",
+          )}
+        />
       </Button>
     </div>
   )

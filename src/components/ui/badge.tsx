@@ -11,6 +11,10 @@ const badgeVariants = cva(
       variant: {
         default: "bg-primary text-primary-foreground [a]:hover:bg-primary/80",
         secondary: "bg-secondary text-secondary-foreground [a]:hover:bg-secondary/80",
+        // Topic tags. Plain `hover:` / `group-hover/card:` (not `[a]:hover:`) because the
+        // badge renders as a <span> inside a <Link>. Card hover tints chips pink so they
+        // don't stay gray on a brand-washed card; direct hover goes one step denser.
+        tag: "bg-secondary text-secondary-foreground group-hover/card:bg-brand-subtle group-hover/card:text-brand-chip-foreground hover:bg-brand-chip hover:text-brand-chip-foreground",
         destructive:
           "bg-destructive/10 text-destructive focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:focus-visible:ring-destructive/40 [a]:hover:bg-destructive/20",
         outline: "border-border text-foreground [a]:hover:bg-muted [a]:hover:text-muted-foreground",

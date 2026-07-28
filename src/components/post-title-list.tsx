@@ -20,7 +20,7 @@ export function PostTitleList({ posts }: PostTitleListProps) {
           </time>
           <Link
             href={post.permalink}
-            className="text-foreground/90 hover:text-foreground justify-self-start font-medium hover:underline transition-colors"
+            className="text-foreground/90 hover:text-brand justify-self-start font-medium transition-colors hover:underline"
           >
             {post.title}
           </Link>

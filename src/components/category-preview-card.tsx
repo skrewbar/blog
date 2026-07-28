@@ -13,12 +13,10 @@ export function CategoryPreviewCard({ category }: CategoryPreviewCardProps) {
   const previewPosts = posts.slice(0, PREVIEW_COUNT)
 
   return (
-    <Card className="hover:bg-muted/40 transition-colors">
+    <Card className="hover:bg-brand-wash transition-colors">
       <CardHeader>
-        <CardTitle className="text-xl">
-          <Link href={getCategoryHref(category)} className="hover:underline">
-            {category}
-          </Link>
+        <CardTitle className="text-xl transition-colors group-hover/card:text-brand-500 group-hover/card:underline dark:group-hover/card:text-brand-300">
+          <Link href={getCategoryHref(category)}>{category}</Link>
         </CardTitle>
         <CardDescription>{posts.length}개의 글</CardDescription>
       </CardHeader>
@@ -28,7 +26,7 @@ export function CategoryPreviewCard({ category }: CategoryPreviewCardProps) {
             <li key={post.slug}>
               <Link
                 href={post.permalink}
-                className="text-foreground/90 hover:text-foreground line-clamp-1 text-sm transition-colors hover:underline"
+                className="text-foreground/90 hover:text-brand line-clamp-1 text-sm transition-colors hover:underline"
               >
                 {post.title}
               </Link>
@@ -38,7 +36,7 @@ export function CategoryPreviewCard({ category }: CategoryPreviewCardProps) {
         {posts.length > PREVIEW_COUNT ? (
           <Link
             href={getCategoryHref(category)}
-            className="text-muted-foreground hover:text-foreground text-sm transition-colors"
+            className="text-muted-foreground hover:text-brand text-sm transition-colors"
           >
             더 보기 →
           </Link>

@@ -69,7 +69,7 @@ export default async function PostPage({ params }: PostPageProps) {
           <span>·</span>
           <span>{post.readingTime}</span>
           <span>·</span>
-          <Link href={getCategoryHref(post.category)} className="hover:text-foreground">
+          <Link href={getCategoryHref(post.category)} className="hover:text-brand transition-colors">
             {post.category}
           </Link>
         </div>
@@ -79,7 +79,7 @@ export default async function PostPage({ params }: PostPageProps) {
           <div className="flex flex-wrap gap-2">
             {post.tags.map((tag) => (
               <Link key={tag} href={`/tags/${encodeURIComponent(tag)}`}>
-                <Badge variant="secondary">{tag}</Badge>
+                <Badge variant="tag">{tag}</Badge>
               </Link>
             ))}
           </div>

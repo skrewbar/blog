@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 export default function PrivacyPage() {
   return (
-    <article className="prose prose-neutral dark:prose-invert max-w-none">
+    <article className="prose prose-neutral dark:prose-invert prose-a:transition-colors prose-a:hover:text-brand max-w-none">
       <h1>개인정보 처리방침</h1>
       <p>{siteConfig.name}(이하 &quot;블로그&quot;)는 댓글 서비스 제공을 위해 아래와 같이 개인정보를 처리합니다.</p>
 

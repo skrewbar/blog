@@ -103,7 +103,7 @@ export function PostStats({ slug }: PostStatsProps) {
         size="sm"
         onClick={handleLike}
         disabled={stats.liked || liking}
-        className="gap-2"
+        className="gap-2 hover:border-brand-border hover:bg-brand-subtle hover:text-brand-chip-foreground dark:hover:border-brand-border dark:hover:bg-brand-subtle dark:hover:text-brand-chip-foreground"
       >
         <Heart className={`h-4 w-4 translate-y-[-0.65px] ${stats.liked ? "fill-current" : ""}`} />
         좋아요 {stats.likeCount.toLocaleString()}
