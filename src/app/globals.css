@@ -279,7 +279,7 @@
 
 /* KaTeX math rendering */
 .katex-display {
-  @apply my-6 overflow-x-auto;
+  @apply my-6 overflow-x-auto overflow-y-hidden;
 }
 
 .prose .katex {
