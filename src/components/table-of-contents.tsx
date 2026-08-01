@@ -13,6 +13,8 @@ type TableOfContentsProps = {
   toc: TocEntry[]
 }
 
+type ScrollFade = "none" | "top" | "bottom" | "both"
+
 /** Matches `.prose :is(h2…h6) { scroll-margin-top: 5rem }` plus subpixel slack. */
 function getActivationOffsetPx(): number {
   const rem = Number.parseFloat(getComputedStyle(document.documentElement).fontSize) || 16
@@ -39,6 +41,19 @@ function headingIdFromUrl(url: string): string {
   return decodeURIComponent(url.replace(/^#/, ""))
 }
 
+function getScrollFade(el: HTMLElement): ScrollFade {
+  const { scrollTop, scrollHeight, clientHeight } = el
+  const maxScroll = scrollHeight - clientHeight
+  if (maxScroll <= 1) return "none"
+
+  const canScrollUp = scrollTop > 1
+  const canScrollDown = scrollTop < maxScroll - 1
+  if (canScrollUp && canScrollDown) return "both"
+  if (canScrollUp) return "top"
+  if (canScrollDown) return "bottom"
+  return "none"
+}
+
 type TocListProps = {
   entries: TocEntry[]
   activeUrl: string | null
@@ -60,8 +75,8 @@ function TocList({ entries, activeUrl, activeChain, onNavigate }: TocListProps) 
             <a
               href={entry.url}
               className={cn(
-                "hover:text-brand transition-colors",
-                isActive && "text-brand font-medium",
+                "block border-l border-border pl-3 transition-colors hover:text-brand",
+                isActive && "border-l-2 border-foreground pl-[11px] font-medium text-foreground",
                 isInChain && !isActive && "text-foreground",
               )}
               onClick={() => onNavigate(entry.url)}
@@ -89,6 +104,7 @@ export function TableOfContents({ toc }: TableOfContentsProps) {
   const urls = useMemo(() => collectUrls(toc), [toc])
   const ancestorMap = useMemo(() => buildAncestorMap(toc), [toc])
   const [activeUrl, setActiveUrl] = useState<string | null>(null)
+  const [scrollFade, setScrollFade] = useState<ScrollFade>("none")
   const navRef = useRef<HTMLElement>(null)
 
   const activeChain = useMemo(() => {
@@ -96,6 +112,13 @@ export function TableOfContents({ toc }: TableOfContentsProps) {
     const ancestors = ancestorMap.get(activeUrl) ?? []
     return new Set([...ancestors, activeUrl])
   }, [activeUrl, ancestorMap])
+
+  const syncScrollFade = () => {
+    const nav = navRef.current
+    if (!nav) return
+    const next = getScrollFade(nav)
+    setScrollFade((prev) => (prev === next ? prev : next))
+  }
 
   useEffect(() => {
     if (!urls.length) return
@@ -178,6 +201,32 @@ export function TableOfContents({ toc }: TableOfContentsProps) {
   }, [urls])
 
   useEffect(() => {
+    const nav = navRef.current
+    if (!nav) return
+
+    syncScrollFade()
+
+    const onNavScroll = () => {
+      syncScrollFade()
+    }
+
+    nav.addEventListener("scroll", onNavScroll, { passive: true })
+
+    const resizeObserver = new ResizeObserver(() => {
+      syncScrollFade()
+    })
+    resizeObserver.observe(nav)
+
+    window.addEventListener("resize", syncScrollFade)
+
+    return () => {
+      nav.removeEventListener("scroll", onNavScroll)
+      resizeObserver.disconnect()
+      window.removeEventListener("resize", syncScrollFade)
+    }
+  }, [urls, activeChain])
+
+  useEffect(() => {
     if (!activeUrl || !navRef.current) return
     const item = Array.from(navRef.current.querySelectorAll("[data-toc-url]")).find(
       (el) => el.getAttribute("data-toc-url") === activeUrl,
@@ -189,6 +238,14 @@ export function TableOfContents({ toc }: TableOfContentsProps) {
       block: "nearest",
       behavior: reduceMotion ? "auto" : "smooth",
     })
+
+    // Fade edges after programmatic scroll settles.
+    const frame = requestAnimationFrame(syncScrollFade)
+    const timer = window.setTimeout(syncScrollFade, reduceMotion ? 0 : 200)
+    return () => {
+      cancelAnimationFrame(frame)
+      window.clearTimeout(timer)
+    }
   }, [activeUrl])
 
   if (!urls.length) return null
@@ -197,7 +254,8 @@ export function TableOfContents({ toc }: TableOfContentsProps) {
     <nav
       ref={navRef}
       aria-label="Table of contents"
-      className="max-h-[calc(100vh-8rem)] overflow-y-auto rounded-lg border p-4"
+      data-fade={scrollFade}
+      className="toc-scroll max-h-[calc(100vh-8rem)] overflow-y-auto pr-1"
     >
       <h2 className="mb-3 text-sm font-semibold">목차</h2>
       <TocList
