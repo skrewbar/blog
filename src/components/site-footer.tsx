@@ -9,7 +9,7 @@ export function SiteFooter() {
           © {new Date().getFullYear()} {siteConfig.author}. All rights reserved.
         </p>
         <div className="flex gap-4">
-          <Link href="/privacy" className="hover:text-brand transition-colors">
+          <Link href="/privacy" className="text-foreground hover:text-brand font-semibold transition-colors">
             개인정보 처리방침
           </Link>
           <Link href="/rss.xml" className="hover:text-brand transition-colors">
