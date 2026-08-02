@@ -40,9 +40,11 @@ export function PostCard({ post }: PostCardProps) {
         <CardTitle className="text-xl transition-colors group-hover/card:text-brand-500 group-hover/card:underline dark:group-hover/card:text-brand-300">
           {post.title}
         </CardTitle>
-        <CardDescription className="transition-colors group-hover/card:text-brand-500 dark:group-hover/card:text-brand-400">
-          {post.description}
-        </CardDescription>
+        {post.description ? (
+          <CardDescription className="transition-colors group-hover/card:text-brand-500 dark:group-hover/card:text-brand-400">
+            {post.description}
+          </CardDescription>
+        ) : null}
         {post.tags.length > 0 ? (
           <div className="flex flex-wrap gap-2 pt-1">
             {post.tags.map((tag) => (

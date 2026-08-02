@@ -20,7 +20,7 @@ export async function GET() {
       title: post.title,
       id: `${siteConfig.url}${post.permalink}`,
       link: `${siteConfig.url}${post.permalink}`,
-      description: post.description,
+      description: post.description ?? "",
       date: new Date(post.date),
       category: [{ name: post.category }],
     })
