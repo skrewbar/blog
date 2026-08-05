@@ -1,0 +1,137 @@
+---
+title: Min of Restricted Sum
+description: AtCoder Beginner Contest 396 E
+date: 2026-08-06 08:20
+slug: abc396e
+category: PS
+tags:
+  - AtCoder
+  - 그래프 이론
+  - 그래프 탐색
+  - 동적 계획법
+---
+
+## 문제
+
+링크: [Min of Restricted Sum](https://atcoder.jp/contests/abc396/tasks/abc396_e)
+
+난이도: <AtRating rating={1379} />
+
+## 풀이
+
+정수 $n$의 $b$번째 비트를 $n \& 2^b$라 합시다.
+
+그렇다면 주어진 조건 $A_{X_i} \oplus A_{Y_i} = Z_i$를 $(A_{X_i} \& 2^b) \oplus (A_{Y_i} \& 2^b) = Z_i \& 2^b$인 조건 31개로 나눌 수 있습니다.
+
+서로 다른 위치의 비트는 xor 연산에서 서로에게 영향을 주지 않기 때문입니다.
+
+이제 문제를 어떤 $0 \leq b < 31$에 대해 $A_i$를 몇 개 골라 $b$번째 비트를 최소한으로 켜서 xor 결과가 $Z_i \& 2^b$와 일치하도록 하는 문제를 각각 푸는 것으로 나눌 수 있습니다.
+
+주어진 조건을 $X_i$와 $Y_i$를 가중치 $Z_i$인 간선으로 잇는 것으로 해석해 봅시다.
+
+그러면 전체 그래프는 여러 연결 요소로 나뉩니다.
+
+어떤 연결 요소 $G = (V, E)$에서 임의의 정점 하나를 뽑아 $r$이라 합시다.
+
+만약 $A_r$의 $b$번째 비트가 결정된다면 같은 연결 요소에 속한 다른 모든 정점의 $b$번째 비트가 결정됩니다.
+
+이는 DFS 트리 DP로 $O(|V|)$에 구할 수 있습니다. $A_r$의 $b$번째 비트가 $0$인 경우와 $1$인 경우 각각 계산한 다음 가장 작은 방법을 선택하면 됩니다.
+
+이를 $0 \leq b < 31$에 대해 모두 수행하면 답을 구할 수 있습니다.
+
+## 코드
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+vector<pair<int, int>> adj[202020];
+
+bool visited[202020];
+
+int root[202020], sz[202020];
+
+void preprocessGraph(int cur) {
+    visited[cur] = true;
+
+    int r = root[cur];
+    sz[r]++;
+
+    for (auto [child, _] : adj[cur]) {
+        if (visited[child]) continue;
+        root[child] = r;
+        preprocessGraph(child);
+    }
+}
+
+bool impossible = false;
+bool isSet[202020];
+int setCnt[202020];
+
+void calcSetCnt(int b, int cur) {
+    visited[cur] = true;
+
+    setCnt[root[cur]] += isSet[cur];
+
+    for (auto [child, z] : adj[cur]) {
+        if (visited[child]) {
+            if ((isSet[cur] ^ isSet[child]) != ((z >> b) & 1))
+                impossible = true;
+            continue;
+        }
+
+        isSet[child] = isSet[cur] ^ ((z >> b) & 1);
+        calcSetCnt(b, child);
+    }
+}
+
+int A[202020];
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int N, M;
+    cin >> N >> M;
+
+    for (int i = 1; i <= M; i++) {
+        int X, Y, Z;
+        cin >> X >> Y >> Z;
+
+        adj[X].emplace_back(Y, Z);
+        adj[Y].emplace_back(X, Z);
+    }
+
+    for (int v = 1; v <= N; v++) {
+        if (visited[v]) continue;
+        root[v] = v;
+        preprocessGraph(v);
+    }
+
+    for (int b = 0; b < 31; b++) {
+        fill(visited + 1, visited + N + 1, false);
+        fill(isSet + 1, isSet + N + 1, false);
+        fill(setCnt + 1, setCnt + N + 1, 0);
+
+        for (int v = 1; v <= N; v++) {
+            if (not visited[v]) {
+                calcSetCnt(b, v);
+
+                if (impossible) {
+                    cout << -1;
+                    return 0;
+                }
+            }
+
+            int r = root[v];
+            bool invert = setCnt[r] > sz[r] - setCnt[r];
+
+            A[v] |= (isSet[v] ^ invert) << b;
+        }
+    }
+
+    for (int i = 1; i <= N; i++) cout << A[i] << ' ';
+
+    return 0;
+}
+```
