@@ -4,12 +4,12 @@ import Link from "next/link"
 import { notFound } from "next/navigation"
 import { CommentSection } from "@/components/comments/comment-section"
 import { MdxContent } from "@/components/mdx-content"
+import { PostMeta } from "@/components/post-meta"
 import { PostStats } from "@/components/post-stats"
 import { TableOfContents } from "@/components/table-of-contents"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
-import { formatUtcDate } from "@/lib/utc-date"
-import { getCategoryHref, getPostBySlug, getPublishedPosts } from "@/lib/posts"
+import { getPostBySlug, getPublishedPosts } from "@/lib/posts"
 import { siteConfig } from "@/lib/site"
 
 type PostPageProps = {
@@ -64,16 +64,8 @@ export default async function PostPage({ params }: PostPageProps) {
         </div>
       ) : null}
       <header className="space-y-4">
-        <div className="text-muted-foreground flex flex-wrap items-center gap-2 text-sm">
-          <time dateTime={post.date}>{formatUtcDate(post.date)}</time>
-          <span>·</span>
-          <span>{post.readingTime}</span>
-          <span>·</span>
-          <Link href={getCategoryHref(post.category)} className="hover:text-brand transition-colors">
-            {post.category}
-          </Link>
-        </div>
         <h1 className="text-4xl font-bold tracking-tight">{post.title}</h1>
+        <PostMeta category={post.category} date={post.date} readingTime={post.readingTime} />
         {post.description ? <p className="text-muted-foreground text-lg">{post.description}</p> : null}
         {post.tags.length ? (
           <div className="flex flex-wrap gap-2">

@@ -1,8 +1,8 @@
 import Link from "next/link"
+import { PostMeta } from "@/components/post-meta"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { formatUtcDate } from "@/lib/utc-date"
-import { getCategoryHref, type Post } from "@/lib/posts"
+import type { Post } from "@/lib/posts"
 
 type PostCardProps = {
   post: Post
@@ -25,21 +25,16 @@ export function PostCard({ post }: PostCardProps) {
         </Badge>
       ) : null}
       <CardHeader className="pointer-events-none relative z-10">
-        <div className="text-muted-foreground flex items-center gap-2 text-sm transition-colors group-hover/card:text-brand-500 dark:group-hover/card:text-brand-400">
-          <time dateTime={post.date}>{formatUtcDate(post.date)}</time>
-          <span>·</span>
-          <span>{post.readingTime}</span>
-          <span>·</span>
-          <Link
-            href={getCategoryHref(post.category)}
-            className="hover:text-brand pointer-events-auto transition-colors"
-          >
-            {post.category}
-          </Link>
-        </div>
         <CardTitle className="text-xl transition-colors group-hover/card:text-brand-500 group-hover/card:underline dark:group-hover/card:text-brand-300">
           {post.title}
         </CardTitle>
+        <PostMeta
+          category={post.category}
+          date={post.date}
+          readingTime={post.readingTime}
+          className="transition-colors group-hover/card:text-brand-500 dark:group-hover/card:text-brand-400"
+          categoryClassName="pointer-events-auto"
+        />
         {post.description ? (
           <CardDescription className="transition-colors group-hover/card:text-brand-500 dark:group-hover/card:text-brand-400">
             {post.description}
