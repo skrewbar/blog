@@ -1,0 +1,120 @@
+---
+title: Alice's Adventures in Cards
+description: Codeforces Round 986 (Div. 2) D
+date: 2026-08-17 16:47
+slug: cf-2028d
+category: PS
+tags:
+  - Codeforces
+  - DP
+  - 역추적
+---
+
+## 문제
+
+링크: [Alice's Adventures in Cards](https://codeforces.com/contest/2028/problem/D)
+
+난이도: <CfRating rating={2000}/>
+
+## 풀이
+
+$a < b$에 대해 $p_a > p_b$라면 Alice는 갖고 있는 $a$를 $b$와 교환할 수 있습니다.
+
+Alice가 교환을 통해 카드 $i$를 손에 넣을 수 있는지 여부를 $dp_i$라 합시다.
+
+$i = 1$부터 $n$까지 증가시키면서 $dp_i$가 참이라면 $p_i > p_j$를 만족하는 모든 $j$에 대해 $dp_j$를 참으로 갱신하면 문제를 해결할 수 있습니다.
+
+다만 이를 Naive하게 구현하면 $O(n^2)$이므로 최적화가 필요합니다.
+
+$i$를 증가시킬 때 $p_i > p_j$인 $j$를 모두 검사하지 말고 새로 도달 가능한 후보만 검사하면 됩니다.
+
+스택에 카드를 $p_i$이 내림차순이 되도록, top이 가장 작도록 넣습니다. 이후 top의 선호도가 $i$보다 작은 경우 꺼내서 $dp$를 갱신하면 됩니다.
+
+한 번 $dp$가 갱신된 카드는 다시 볼 필요가 없으므로 스택에서 제거해도 됩니다.
+
+스택에서 제거는 최대 $n$번만 일어날 수 있으므로 시간 복잡도 $O(n)$에 해결할 수 있습니다.
+
+스택은 플레이어마다 하나씩 총 3개를 관리하고, 역추적은 $dp_j$가 갱신된 경우 갱신시킨 카드의 번호 $i$와 거래한 플레이어를 저장하는 방식으로 구현하면 됩니다.
+
+## 코드
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+#define all(v) v.begin(), v.end()
+
+void solve() {
+    int n;
+    cin >> n;
+
+    vector<vector<int>> pref(3, vector<int>(n + 1));
+    for (int j = 0; j < 3; j++) {
+        for (int i = 1; i <= n; i++) cin >> pref[j][i];
+    }
+    vector<vector<pair<int, int>>> cand(3);
+    for (int j = 0; j < 3; j++) {
+        for (int i = 1; i <= n; i++) cand[j].emplace_back(pref[j][i], i);
+        sort(all(cand[j]), greater<>());
+    }
+
+    vector<bool> possible(n + 1);
+    vector<pair<int, int>> prev(n + 1);
+    possible[1] = true;
+
+    for (int i = 1; i <= n; i++) {
+        if (not possible[i]) continue;
+
+        for (int j = 0; j < 3; j++) {
+            if (cand[j].empty()) continue;
+
+            while (not cand[j].empty()) {
+                auto [p, c] = cand[j].back();
+                if (p > pref[j][i]) break;
+
+                if (i < c) {
+                    possible[c] = true;
+                    prev[c] = {j, i};
+                }
+
+                cand[j].pop_back();
+            }
+        }
+    }
+
+    if (not possible[n]) {
+        println("NO");
+        return;
+    }
+
+    println("YES");
+
+    stack<pair<int, int>> ans;
+    int p, c;
+    for (int i = n; i != 1; i = c) {
+        tie(p, c) = prev[i];
+        ans.emplace(p, i);
+    }
+
+    string players = "qkj";
+    println("{}", ans.size());
+    while (not ans.empty()) {
+        tie(p, c) = ans.top();
+        ans.pop();
+
+        println("{} {}", players[p], c);
+    }
+}
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int t;
+    cin >> t;
+
+    while (t--) solve();
+
+    return 0;
+}
+```
