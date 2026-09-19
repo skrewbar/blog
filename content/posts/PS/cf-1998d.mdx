@@ -1,0 +1,99 @@
+---
+title: Determine Winning Islands in Race
+description: Codeforces Round 965 (Div. 2) D
+date: 2026-09-19 12:28
+slug: cf-1998d
+category: PS
+tags:
+  - 그래프 이론
+  - DP
+  - 최단 거리
+  - 그리디 알고리즘
+---
+
+동아리 선배에게 문제를 하나 추천 받아서 풀이를 써 보았습니다.
+
+## 문제
+
+링크: [Determine Winning Islands in Race](https://codeforces.com/contest/1998/problem/D)
+
+난이도: <CfRating rating={2100} />
+
+## 풀이
+
+Elsie가 Bessie를 이기기 위해서는 $u < s$인 간선 $(u, v)$를 이용해서 Bessie를 뛰어넘어야 합니다.
+
+$1$에서 시작해서 $i$까지 Elsie가 도착하는 데 필요한 최소 이동 횟수(=간선 개수)를 $d_i$라 합시다.
+
+$u < s$인 간선 $(u, v)$를 사용해서 $v$에 도착한다면 Elsie가 $v$까지 가는데 필요한 이동 횟수는 $d_u + 1$입니다.
+
+만약 $d_{v + 1} = d_v + 1$이라면 $v$에서 Bessie를 뛰어넘지 못하는 경우 $v + 1$에서도 뛰어넘지 못할 것입니다. 마찬가지로 $d_{v + i} = d_v + i$라면 $v$와 $v + i$에서 Bessie를 뛰어넘을 수 있는지 여부는 동일합니다.
+
+따라서 중요한 것은 $v - d_v$의 값으로, 이 값이 제일 큰 정점 $v$만 확인해도 Bessie를 뛰어넘을 수 있는지 판단할 수 있습니다.
+
+이 값이 가장 큰 $v$에 대해 생각해 봅시다. Bessie는 $v$에 도달하기 위해 $v - s$만큼의 이동이 필요합니다.
+
+따라서 $v - s \leq d_v$가 Bessie가 이길 필요충분조건이 됩니다.
+
+이때 $d_v = v - (v - d_v)$이므로 위 부등식에 대입해서 식을 정리하면 $s \geq v - d_v$가 됩니다.
+
+위 알고리즘을 naive하게 구현하면 $O(n^2)$이므로 시간 초과를 받습니다.
+
+$d_i$는 DP를 이용해서 총 $O(n + m)$에 갱신하고, $v - d_v$의 최댓값은 각 $s$에 대해 판단이 끝날 때 마다 $s$에서 $n$ 방향으로 가는 간선을 모두 검사해주면 전체 알고리즘에서 $O(m)$에 갱신할 수 있습니다.
+
+## 코드
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+template <typename T>
+bool minimize(T& target, T candidate) {
+    return target > candidate ? (target = candidate, true) : false;
+}
+template <typename T>
+bool maximize(T& target, T candidate) {
+    return target < candidate ? (target = candidate, true) : false;
+}
+
+void solve() {
+    int n, m;
+    cin >> n >> m;
+
+    vector<vector<int>> alts(n + 1);
+    for (int i = 0; i < m; i++) {
+        int u, v;
+        cin >> u >> v;
+
+        if (u > v) swap(u, v);
+
+        alts[u].push_back(v);
+    }
+
+    vector<int> d(n + 1, n + 1);
+    d[1] = 0;
+    int winBound = 0; // max(v - dist[v])
+    for (int s = 1; s < n; s++) {
+        cout << (winBound <= s);
+
+        minimize(d[s], d[s - 1] + 1);
+        for (int v : alts[s]) {
+            minimize(d[v], d[s] + 1);
+            maximize(winBound, v - d[v]);
+        }
+    }
+    cout << '\n';
+}
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int t;
+    cin >> t;
+
+    while (t--) solve();
+
+    return 0;
+}
+```
