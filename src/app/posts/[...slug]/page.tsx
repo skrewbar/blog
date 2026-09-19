@@ -78,16 +78,33 @@ export default async function PostPage({ params }: PostPageProps) {
         ) : null}
         <PostStats slug={post.slug} />
         {post.cover ? (
-          <div className="relative aspect-[2/1] overflow-hidden rounded-xl border">
-            <Image
-              src={post.cover}
-              alt={post.title}
-              fill
-              sizes="(min-width: 1024px) 992px, calc(100vw - 2rem)"
-              className="object-cover"
-              priority
-            />
-          </div>
+          post.coverAspect === "auto" ? (
+            <div className="overflow-hidden rounded-xl border">
+              <Image
+                src={post.cover}
+                alt={post.title}
+                width={1600}
+                height={900}
+                sizes="(min-width: 1024px) 992px, calc(100vw - 2rem)"
+                className="h-auto w-full"
+                priority
+              />
+            </div>
+          ) : (
+            <div
+              className="relative overflow-hidden rounded-xl border"
+              style={{ aspectRatio: post.coverAspect ?? "2/1" }}
+            >
+              <Image
+                src={post.cover}
+                alt={post.title}
+                fill
+                sizes="(min-width: 1024px) 992px, calc(100vw - 2rem)"
+                className="object-cover"
+                priority
+              />
+            </div>
+          )
         ) : null}
       </header>
 

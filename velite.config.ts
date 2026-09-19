@@ -13,6 +13,14 @@ const utcDate = defineSchema(() =>
     .transform((value) => parseUtcDate(value).toISOString()),
 )
 
+const COVER_ASPECT_PATTERN = /^(?:auto|[1-9]\d*\/[1-9]\d*)$/
+
+const coverAspect = defineSchema(() =>
+  s
+    .string()
+    .refine((value) => COVER_ASPECT_PATTERN.test(value), "Invalid coverAspect: use auto or integer/integer"),
+)
+
 const posts = defineCollection({
   name: "Post",
   pattern: "posts/**/*.mdx",
@@ -25,6 +33,7 @@ const posts = defineCollection({
       category: s.string(),
       tags: s.array(s.string()).default([]),
       cover: s.string().optional(),
+      coverAspect: coverAspect().optional(),
       draft: s.boolean().default(false),
       content: s.mdx(),
       toc: s.toc(),
