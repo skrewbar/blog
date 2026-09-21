@@ -9,8 +9,7 @@ updates:
       timezone: Asia/Seoul
     open-pull-requests-limit: 5
     commit-message:
-      prefix: chore
-      include: scope
+      prefix: "⬆️ "
     groups:
       production:
         dependency-type: production
@@ -34,5 +33,4 @@ updates:
       time: "09:00"
       timezone: Asia/Seoul
     commit-message:
-      prefix: chore
-      include: scope
+      prefix: "⬆️ "
