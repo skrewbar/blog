@@ -7,7 +7,7 @@
     "dev:content": "velite --watch",
     "dev:next": "next dev",
     "dev": "run-p dev:content dev:next",
-    "build:content": "velite --clean",
+    "build:content": "velite --clean --strict",
     "build:next": "next build",
     "build": "run-s build:content build:next",
     "start": "next start",

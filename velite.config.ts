@@ -1,4 +1,5 @@
-import { defineCollection, defineConfig, defineSchema, s } from "velite"
+import { basename, extname } from "node:path"
+import { context, defineCollection, defineConfig, defineSchema, s } from "velite"
 import rehypeKatex from "rehype-katex"
 import rehypePrettyCode from "rehype-pretty-code"
 import rehypeSlug from "rehype-slug"
@@ -16,9 +17,25 @@ const utcDate = defineSchema(() =>
 const COVER_ASPECT_PATTERN = /^(?:auto|[1-9]\d*\/[1-9]\d*)$/
 
 const coverAspect = defineSchema(() =>
+  s.string().refine((value) => COVER_ASPECT_PATTERN.test(value), "Invalid coverAspect: use auto or integer/integer"),
+)
+
+const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
+
+/**
+ * Slug derived from the file name (category folders are ignored) and lowercased,
+ * e.g. `posts/PS/CF-990D.mdx` → `cf-990d`. Must be kebab-case and unique across all posts.
+ */
+const fileSlug = defineSchema(() =>
   s
-    .string()
-    .refine((value) => COVER_ASPECT_PATTERN.test(value), "Invalid coverAspect: use auto or integer/integer"),
+    .unknown()
+    .transform(() => basename(context().file.path, extname(context().file.path)).toLowerCase())
+    .pipe(
+      s
+        .string()
+        .regex(SLUG_PATTERN, "Invalid file name: use letters, digits and hyphens (e.g. cf-990d.mdx)")
+        .pipe(s.unique("post-slug")),
+    ),
 )
 
 const posts = defineCollection({
@@ -29,7 +46,7 @@ const posts = defineCollection({
       title: s.string().max(200),
       description: s.string().max(500).optional(),
       date: utcDate(),
-      slug: s.string(),
+      slug: fileSlug(),
       category: s.string(),
       tags: s.array(s.string()).default([]),
       cover: s.string().optional(),
