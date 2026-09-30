@@ -26,6 +26,11 @@ updates:
         update-types: ["version-update:semver-major"]
       - dependency-name: typescript
         update-types: ["version-update:semver-major"]
+      # rehype-katex renders with katex@^0.16, so the CSS (katex/dist/katex.min.css)
+      # must stay on 0.16 too — 0.18 renamed classes (.base → .katex-base, etc.).
+      # Lift this once rehype-katex supports a newer katex.
+      - dependency-name: katex
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
 
   - package-ecosystem: github-actions
     directory: /
