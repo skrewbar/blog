@@ -12,6 +12,7 @@
     "build": "run-s build:content build:next",
     "start": "next start",
     "lint": "eslint",
+    "typecheck": "next typegen && tsc --noEmit",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "velite": "velite --clean"
