@@ -1,0 +1,180 @@
+---
+title: Clean Substrings
+description: Codeforces Round 1123 (Div. 2) E
+date: 2026-09-30 09:38
+category: PS
+tags:
+  - Codeforces
+  - 수학
+  - 조합론
+  - 자료 구조
+  - 세그먼트 트리
+---
+
+## 문제
+
+링크: [Clean Substrings](https://codeforces.com/contest/2267/problem/E)
+
+체감 난이도: <CfRating rating={1900} />
+
+## 풀이
+
+먼저 어떤 문자열을 clean하게 만들기 위한 최소 연산 횟수를 계산해 봅시다.
+
+문자열을 이웃한 두 조각의 문자가 다르도록 clean한 조각들로만 분리해 봅시다.
+
+예를 들어 0001101011은 000, 11, 0, 1, 0, 11로 분리할 수 있습니다.
+
+이때 각 clean한 조각을 run이라 부르겠습니다. 좀 더 엄밀히 말하자면 run은 같은 문자로 이루어진 극대 구간입니다.
+
+문자열의 run 개수를 $R$이라 하면 clean하게 만들기 위해서는 최소 $\left\lfloor \dfrac{R}{2} \right\rfloor$번의 연산이 필요합니다.
+
+<Collapsible title="증명">
+
+clean한 부분 문자열은 항상 어떤 run의 부분 문자열입니다. 만약 run 전체를 뒤집는 경우 run의 개수는 최소 $1$개 줄어들지만, 그렇지 않은 경우 run의 개수가 줄어들지 않습니다.
+
+연속한 세 개의 run에서 가운데의 run을 뒤집으면 run 개수가 $2$개 줄어듭니다.
+
+따라서 run의 개수가 홀수인 경우 가운데 있는 run을 계속 뒤집으면 $\left\lfloor \dfrac{R}{2} \right\rfloor$번 만에 run의 개수를 $1$로 줄일 수 있습니다.
+
+짝수인 경우 같은 방법을 사용하되 run의 개수가 $2$씩 줄어들므로 마지막 하나를 뒤집을 때는 $1$개만 줄어듭니다. 따라서 $\left\lceil \dfrac{R - 1}{2} \right\rceil = \left\lfloor \dfrac{R}{2} \right\rfloor$번 만에 run의 개수를 $1$로 줄일 수 있습니다.
+
+한 번 run을 뒤집을 때 run의 개수는 최대 $2$개 감소할 수 있으므로 위 방법이 최적입니다.
+
+</Collapsible>
+
+$s_i$가 바뀌었을 때 해당 문자를 포함하는 부분 문자열만 얼마나 변하는지 계산해 봅시다.
+
+$s_i$를 포함하는 어떤 부분 문자열의 run의 개수가 $1$ 줄어드는 경우 답이 바뀌려면 원래 run의 개수가 짝수여야 합니다.
+
+반대로 run의 개수가 $1$ 늘어나는 경우는 원래 개수가 홀수여야 합니다.
+
+$s_{i - 1} = s_{i + 1}$이라면 $s_{i - 1}, s_i, s_{i + 1}$을 모두 포함하는 부분 문자열은 항상 run의 개수가 $2$개씩 변합니다. 따라서 그러한 부분 문자열의 개수를 세면 답이 얼마나 변하는지 알 수 있습니다.
+
+$s_{i - 1} \neq s_{i + 1}$인 경우에는 셋을 포함하는 부분 문자열의 run 개수가 변하지 않습니다.
+
+남은 경우인 $s_i$를 오른쪽 끝으로 포함하는 부분 문자열, 왼쪽 끝으로 포함하는 부분 문자열, $s_i$ 하나만 포함하는 부분 문자열에 대해 살펴봅시다.
+
+$s_i$ 하나만 포함하는 부분 문자열은 답이 변하지 않으므로 고려하지 않아도 됩니다.
+
+나머지 둘은 방향만 다르므로 계산하는 방법이 같습니다. 이 글에서는 $s_i$를 오른쪽 끝으로 포함하는 부분 문자열만 설명하겠습니다.
+
+일반성을 잃지 않고 바뀌기 전 $s_i$를 0이라 합시다.
+
+만약 $s_{i - 1} = s_i$였던 경우에는 run의 개수가 늘어납니다. 원래 run이 홀수 개였던 부분 문자열의 개수는 $i$ 왼쪽에 있는 0의 개수와 같습니다.
+
+$s_{i - 1} \neq s_i$였던 경우에는 run의 개수가 줄어듭니다. 원래 run이 짝수 개였던 부분 문자열의 개수는 $i$ 왼쪽에 있는 1($s_i$의 반대)의 개수와 같습니다.
+
+특정 구간의 문자의 개수는 세그먼트 트리를 이용해서 빠르게 구할 수 있습니다.
+
+따라서 각 쿼리를 $O(\log n)$에 처리할 수 있습니다.
+
+초깃값을 계산하는 방법을 알아봅시다.
+
+먼저 초기 문자열을 모두 0으로 이루어진 문자열로 설정합니다. 이 경우 모든 부분 문자열은 clean하므로 답이 $0$입니다.
+
+입력으로 주어지는 $s$를 쿼리로 생각하고 $s_i$가 1인 경우에 대해서만 처리해주면 초깃값을 구할 수 있습니다.
+
+전체 시간 복잡도는 $O((n + q)\log n)$입니다.
+
+## 코드
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+using ll = long long;
+
+struct SegmentTree {
+    int n;
+    vector<int> t;
+
+    SegmentTree() = default;
+    SegmentTree(int n) : n(n), t(n << 1) {}
+
+    void change(int i, int v) {
+        for (t[i += n] = v; i > 1; i >>= 1) t[i >> 1] = t[i] + t[i ^ 1];
+    }
+
+    int getRangeSum(int l, int r) {
+        int ret = 0;
+
+        for (l += n, r += n; l <= r; l >>= 1, r >>= 1) {
+            if (l & 1) ret += t[l++];
+            if (~r & 1) ret += t[r--];
+        }
+
+        return ret;
+    }
+};
+
+SegmentTree cnt[2];
+
+void solve() {
+    int n, q;
+    cin >> n >> q;
+
+    cnt[0] = cnt[1] = SegmentTree(n + 1);
+
+    vector<int> s(n + 2);
+    for (int i = 1; i <= n; i++) cnt[0].change(i, 1);
+
+    string str;
+    cin >> str;
+    str = '#' + str;
+
+    ll ans = 0;
+
+    auto query = [&](int i) {
+        if (s[i - 1] == s[i]) {
+            ans += cnt[s[i]].getRangeSum(1, i - 1);
+        } else {
+            ans -= cnt[!s[i]].getRangeSum(1, i - 1);
+        }
+
+        if (s[i] == s[i + 1]) {
+            ans += cnt[s[i]].getRangeSum(i + 1, n);
+        } else {
+            ans -= cnt[!s[i]].getRangeSum(i + 1, n);
+        }
+
+        if (s[i - 1] == s[i + 1]) {
+            if (s[i - 1] == s[i]) {
+                ans += (ll)(i - 1) * (n - i);
+            } else {
+                ans -= (ll)(i - 1) * (n - i);
+            }
+        }
+
+        cnt[s[i]].change(i, 0);
+        s[i] = !s[i];
+        cnt[s[i]].change(i, 1);
+    };
+
+    for (int i = 1; i <= n; i++) {
+        if (str[i] == '1') query(i);
+    }
+
+    print("{} ", ans);
+    while (q--) {
+        int i;
+        cin >> i;
+
+        query(i);
+        print("{} ", ans);
+    }
+    println();
+}
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int t;
+    cin >> t;
+
+    while (t--) solve();
+
+    return 0;
+}
+```
