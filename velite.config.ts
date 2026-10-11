@@ -1,4 +1,4 @@
-import { basename, extname } from "node:path"
+import { basename, extname, join, relative, sep } from "node:path"
 import { context, defineCollection, defineConfig, defineSchema, s } from "velite"
 import rehypeKatex from "rehype-katex"
 import rehypePrettyCode from "rehype-pretty-code"
@@ -38,6 +38,21 @@ const fileSlug = defineSchema(() =>
     ),
 )
 
+/**
+ * Category derived from the top-level folder under `posts/`,
+ * e.g. `posts/PS/cf-990d.mdx` → `PS`. Posts must live inside a category folder.
+ */
+const fileCategory = defineSchema(() =>
+  s
+    .unknown()
+    .transform(() => {
+      const { config, file } = context()
+      const [category] = relative(join(config.root, "posts"), file.path).split(sep)
+      return category === basename(file.path) ? "" : category.normalize("NFC")
+    })
+    .pipe(s.string().min(1, "Posts must be inside a category folder (e.g. posts/PS/cf-990d.mdx)")),
+)
+
 const posts = defineCollection({
   name: "Post",
   pattern: "posts/**/*.mdx",
@@ -47,7 +62,7 @@ const posts = defineCollection({
       description: s.string().max(500).optional(),
       date: utcDate(),
       slug: fileSlug(),
-      category: s.string(),
+      category: fileCategory(),
       tags: s.array(s.string()).default([]),
       cover: s.string().optional(),
       coverAspect: coverAspect().optional(),
